@@ -56,6 +56,12 @@ flutter:
     - assets/images/Subtract.svg
     - assets/images/img1.png
     - assets/images/search.svg
+    - assets/images/delivery.svg
+    - assets/images/money.svg
+    - assets/images/lock.svg
+    - assets/images/call.svg
+    - assets/images/filter.svg
+
 
 
 

@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:furni_mobile_app/Header/header.dart';
 import 'package:furni_mobile_app/contactUs/about.dart';
 import 'package:furni_mobile_app/contactUs/widget/contactForm.dart';
+import 'package:furni_mobile_app/contactUs/widget/services.dart';
 import 'package:furni_mobile_app/contactUs/widget/shopnow.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -33,8 +34,9 @@ class Contactus extends StatelessWidget{
               padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(10)
+                borderRadius: BorderRadius.circular(20)
               ),
+              height: 160,
               child: Center(
                 child: Column(
                   children: [
@@ -64,8 +66,9 @@ class Contactus extends StatelessWidget{
               padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(10)
+                borderRadius: BorderRadius.circular(20)
               ),
+               height: 160,
               child: Center(
                 child: Column(
                   children: [
@@ -92,10 +95,11 @@ class Contactus extends StatelessWidget{
              ),
              SizedBox(height: 16),
               Container(
+              height: 160,
               padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(10)
+                borderRadius: BorderRadius.circular(20)
               ),
               child: Center(
                 child: Column(
@@ -122,6 +126,7 @@ class Contactus extends StatelessWidget{
              ),
               SizedBox(height: 32),
               Contactform(),
+              SizedBox(height: 10),
               ElevatedButton(
                 onPressed: (){}, 
                 style: ElevatedButton.styleFrom(
@@ -139,6 +144,8 @@ class Contactus extends StatelessWidget{
                 ),
                 ),
               ),
+              SizedBox(height: 50),
+              Services()
             ],
           ),
         ),
