@@ -1,6 +1,5 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:furni_project/screens/home_screen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class GlassFloatingNavBar extends StatefulWidget {
@@ -15,85 +14,74 @@ class _GlassFloatingNavBarState extends State<GlassFloatingNavBar> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBody: true, // ← VERY IMPORTANT so navbar floats over content
-      backgroundColor: Colors.white, // you can set anything behind
-
-      body: Stack(
-        children: [
-          // --------------------- MAIN PAGE CONTENT ---------------------
-          HomeScreen(),
-
-          // --------------------- FLOATING NAV BAR ---------------------
-          Positioned(
-            left: 16,
-            right: 16,
-            bottom: 20, // ← makes it FLOAT
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(24),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
-                child: Container(
-                  height: 65,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.12), // glass tint
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(
-                      color: Colors.white.withOpacity(0.25),
-                      width: 1.2,
+    return Stack(
+      children: [
+        Positioned(
+          left: 16,
+          right: 16,
+          bottom: 20,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(24),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+              child: Container(
+                height: 65,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.25),
+                    width: 1.2,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.07),
+                      blurRadius: 25,
+                      offset: Offset(0, 6),
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.07),
-                        blurRadius: 25,
-                        offset: const Offset(0, 6),
+                  ],
+                ),
+                child: BottomNavigationBar(
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  type: BottomNavigationBarType.fixed,
+                  selectedItemColor: Colors.black,
+                  unselectedItemColor: Colors.black54,
+                  currentIndex: _selectedIndex,
+                  onTap: (i) => setState(() => _selectedIndex = i),
+                  items: [
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.home_outlined),
+                      label: "Home",
+                    ),
+                    BottomNavigationBarItem(
+                      icon: SvgPicture.asset(
+                        'assets/images/shop-page.svg',
+                        width: 26,
                       ),
-                    ],
-                  ),
-                  child: BottomNavigationBar(
-                    backgroundColor: Colors.transparent,
-                    elevation: 0,
-                    type: BottomNavigationBarType.fixed,
-                    selectedItemColor: Colors.black,
-                    unselectedItemColor: Colors.black54,
-                    currentIndex: _selectedIndex,
-                    onTap: (i) => setState(() => _selectedIndex = i),
-                    items: [
-                      BottomNavigationBarItem(
-                        icon: Icon(Icons.home_outlined),
-                        label: "Home",
+                      label: "Shop",
+                    ),
+                    BottomNavigationBarItem(
+                      icon: SvgPicture.asset(
+                        'assets/images/cart_logo.svg',
+                        width: 26,
                       ),
-
-                      BottomNavigationBarItem(
-                        icon: SvgPicture.asset(
-                          'assets/images/shop-page.svg',
-                          width: 26,
-                        ),
-                        label: "Shop Page",
+                      label: "Cart",
+                    ),
+                    BottomNavigationBarItem(
+                      icon: SvgPicture.asset(
+                        'assets/images/user-circle.svg',
+                        width: 26,
                       ),
-
-                      BottomNavigationBarItem(
-                        icon: SvgPicture.asset(
-                          'assets/images/cart_logo.svg',
-                          width: 26,
-                        ),
-                        label: "Cart",
-                      ),
-                      BottomNavigationBarItem(
-                        icon: SvgPicture.asset(
-                          'assets/images/user-circle.svg',
-                          width: 26,
-                        ),
-                        label: "Profile",
-                      ),
-                    ],
-                  ),
+                      label: "Profile",
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

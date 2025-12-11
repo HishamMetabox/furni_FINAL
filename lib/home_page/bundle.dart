@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:furni_project/home_page/shopNow_widget.dart';
 
 class Bundle extends StatelessWidget {
   const Bundle({super.key});
@@ -44,34 +44,13 @@ class Bundle extends StatelessWidget {
                     ),
                   ),
 
-                  Positioned(
-                    top: 48,
-                    child: Row(
-                      children: [
-                        TextButton(
-                          onPressed: () {},
-                          child: Text(
-                            'Shop now',
-                            style: TextStyle(
-                              color: const Color.fromARGB(255, 0, 0, 0),
-                            ),
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () {},
-                          icon: const Icon(
-                            Icons.arrow_forward,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  Positioned(top: 60, left: 15, child: ShopNowLink()),
                 ],
               ),
             ),
+            //--------------------------------container 2------------------------
             Container(
-              height: 300,
+              height: 230,
               margin: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: const Color.fromARGB(100, 243, 245, 247),
@@ -100,34 +79,13 @@ class Bundle extends StatelessWidget {
                     ),
                   ),
 
-                  Positioned(
-                    top: 125,
-                    child: Row(
-                      children: [
-                        TextButton(
-                          onPressed: () {},
-                          child: Text(
-                            'Shop now',
-                            style: TextStyle(
-                              color: const Color.fromARGB(255, 21, 21, 21),
-                            ),
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () {},
-                          icon: const Icon(
-                            Icons.arrow_forward,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  Positioned(top: 135, left: 10, child: ShopNowLink()),
                 ],
               ),
             ),
+            //------------------------------container 3------------------------
             Container(
-              height: 400,
+              height: 300,
               margin: const EdgeInsets.all(16),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -147,7 +105,7 @@ class Bundle extends StatelessWidget {
                   ),
                   Positioned(
                     top: 100,
-                    left: 10,
+                    left: 15,
                     child: Text(
                       'Kitchen',
                       style: TextStyle(
@@ -156,29 +114,8 @@ class Bundle extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Positioned(
-                    top: 125,
-                    child: Row(
-                      children: [
-                        TextButton(
-                          onPressed: () {},
-                          child: Text(
-                            'Shop now',
-                            style: TextStyle(
-                              color: const Color.fromARGB(255, 17, 16, 16),
-                            ),
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () {},
-                          icon: const Icon(
-                            Icons.arrow_forward,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+
+                  Positioned(top: 135, left: 11, child: ShopNowLink()),
                 ],
               ),
             ), //3

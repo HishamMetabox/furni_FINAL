@@ -34,4 +34,8 @@ flutter:
     - assets/images/bedroom.png
     - assets/images/kitchen1.svg
     - assets/images/kitchen0.png
+    - assets/images/about_us.png
+    - assets/images/cart_logo.svg
+    - assets/images/user-circle.svg
+    - assets/images/shop-page.svg
 
