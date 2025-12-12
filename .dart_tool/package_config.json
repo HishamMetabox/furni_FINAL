@@ -83,7 +83,7 @@
       "name": "flutter_svg",
       "rootUri": "file:///C:/Users/hisha/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_svg-2.2.3",
       "packageUri": "lib/",
-      "languageVersion": "3.8"
+      "languageVersion": "2.17"
     },
     {
       "name": "flutter_test",
@@ -155,13 +155,19 @@
       "name": "meta",
       "rootUri": "file:///C:/Users/hisha/AppData/Local/Pub/Cache/hosted/pub.dev/meta-1.16.0",
       "packageUri": "lib/",
-      "languageVersion": "2.12"
+      "languageVersion": "3.5"
     },
     {
       "name": "path",
       "rootUri": "file:///C:/Users/hisha/AppData/Local/Pub/Cache/hosted/pub.dev/path-1.9.1",
       "packageUri": "lib/",
       "languageVersion": "3.4"
+    },
+    {
+      "name": "path_drawing",
+      "rootUri": "file:///C:/Users/ridwa.DESKTOP-QQ83I80/AppData/Local/Pub/Cache/hosted/pub.dev/path_drawing-1.0.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
     },
     {
       "name": "path_parsing",

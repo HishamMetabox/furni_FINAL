@@ -10,18 +10,20 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: SingleChildScrollView(
-        child: Column(
-          children: const [
-            Header(),
-            CarouselWidget(),
-            Bundle(),
-            NewArrival(),
+    return Scaffold(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            children: const [
+              Header(),
+              CarouselWidget(),
+              Bundle(),
+              NewArrival(),
 
-            AboutUsSection(),
-            //  FooterWidget(),
-          ],
+              AboutUsSection(),
+              //  FooterWidget(),
+            ],
+          ),
         ),
       ),
     );

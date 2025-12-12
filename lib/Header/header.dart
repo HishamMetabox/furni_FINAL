@@ -18,19 +18,16 @@ class _HeaderState extends State<Header> {
     _searchController.dispose();
     super.dispose();
   }
-  Widget _searchIcon(){
+
+  Widget _searchIcon() {
     return IconButton(
-                icon: SvgPicture.asset(
-                  'assets/images/search.svg',
-                  width: 24,
-                  height: 24,
-                ),
-                onPressed: () {
-                  setState(() {
-                    _showSearch = !_showSearch;
-                  });
-                },
-              );
+      icon: SvgPicture.asset('assets/images/search.svg', width: 24, height: 24),
+      onPressed: () {
+        setState(() {
+          _showSearch = !_showSearch;
+        });
+      },
+    );
   }
 
   Widget _buildSearchBar() {
@@ -48,7 +45,10 @@ class _HeaderState extends State<Header> {
           controller: _searchController,
           decoration: InputDecoration(
             hintText: 'Type something...',
-            hintStyle: GoogleFonts.inter(fontWeight: FontWeight.w400, fontSize: 14),
+            hintStyle: GoogleFonts.inter(
+              fontWeight: FontWeight.w400,
+              fontSize: 14,
+            ),
             border: InputBorder.none,
             isDense: true,
             contentPadding: const EdgeInsets.symmetric(vertical: 8),
@@ -73,15 +73,11 @@ class _HeaderState extends State<Header> {
             width: 100,
             height: 90,
           ),
-         
+
           const Spacer(),
           if (_showSearch) _buildSearchBar(),
-        
-          Row(
-            children: [
-              _searchIcon()
-            ],
-          ),
+
+          Row(children: [_searchIcon()]),
         ],
       ),
     );
