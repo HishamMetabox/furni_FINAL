@@ -4,6 +4,7 @@ import 'package:furni_mobile_app/Header/header.dart';
 import 'package:furni_mobile_app/Items/cart_listview.dart';
 import 'package:furni_mobile_app/dummy%20items/data_required.dart';
 import 'package:furni_mobile_app/screens/order_summary_screen.dart';
+
 import 'package:google_fonts/google_fonts.dart';
 import 'package:furni_mobile_app/dummy%20items/myItems.dart';
 
@@ -151,57 +152,144 @@ class _CartScreenState extends State<CartScreen> {
                       ),
                     ),
                   ),
-                  Container(
-                    height: 540,
-                    width: 380,
-                    decoration: BoxDecoration(
-                      border: Border.all(width: 1, color: Colors.black),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 5),
-                          Text(
-                            'Cart Summary',
-                            style: GoogleFonts.inter(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          Container(
-                            height: 60,
-                            decoration: BoxDecoration(
-                              border: Border.all(width: 1, color: Colors.black),
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 3),
-                              child: RadioListTile(
-                                activeColor: Colors.black,
-                                title: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      'Free Shipping',
-                                      style: GoogleFonts.inter(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    Text(
-                                      '0.00',
-                                      style: GoogleFonts.inter(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ), // to be added
-                                  ],
-                                ),
+                ),
+                Container(
+    height: 540,
+    
+    decoration: BoxDecoration(
+      
+      border: Border.all(width: 1, color: Colors.black), borderRadius: BorderRadius.circular(8)
+    ),
+     child: Padding(
+       padding: const EdgeInsets.all(20.0),
+       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+        const  SizedBox(height: 5,),
+        Text('Cart Summary',style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600)),
+        const SizedBox(height: 20,),
+           Container(
+            height: 60,
+            decoration: BoxDecoration(
+              border: Border.all(width: 1, color: Colors.black,), borderRadius: BorderRadius.circular(5)
+            ),
+             child: Padding(
+               padding: const EdgeInsets.only(top: 3),
+               child: RadioListTile(
+             
+                activeColor: Colors.black,
+                title: Row(
+                  
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Free Shipping',style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600)),
+                    Text('0.00', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600),)// to be added
+                  ],
+                ),
+                
+                value: 'F', 
+                groupValue: shippingType,
+                onChanged: (value) => setState(() {
+                  shippingType = value!;
+                }),
+                 visualDensity: const VisualDensity(horizontal: -4.0),
+                ),
+             ),
+           ),
+          const  SizedBox(height: 16,),
+          Container(
+            height: 60,
+            decoration: BoxDecoration(
+              border: Border.all(width: 1, color: Colors.black), borderRadius: BorderRadius.circular(5)
+            ),
+            child: Padding(
+              padding: const EdgeInsets.only(top: 3),
+              child: RadioListTile(
+              activeColor: Colors.black,
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Express Shipping', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600),),
+                  Text('+15.00',style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600))
+                ],
+              ),
+              value: 'E', 
+              groupValue: shippingType,
+              onChanged: (value) => setState(() {
+                shippingType = value!;
+              }),
+              visualDensity: const VisualDensity(horizontal: -4.0),
+              ),
+            ),
+          ),
+            const SizedBox(height: 16,),
+          Container(
+            height: 60,
+            decoration: BoxDecoration(
+              border: Border.all(width: 1, color:Colors.black ),borderRadius: BorderRadius.circular(5)
+            ),
+            child: Padding(
+              padding: const EdgeInsets.only(top: 3),
+              child: RadioListTile(
+              activeColor: Colors.black,
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Pick Up',style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600)),
+                  Text('%21.00',style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600))
+                ],
+              ),
+              value: 'P',
+              groupValue: shippingType,
+              onChanged: (value) {
+              setState(() {
+              shippingType = value!;
+                  });
+                }, 
+                
+             visualDensity: const VisualDensity(horizontal: -4.0),
+              ),
+            ),
+          ),
+         const SizedBox(height: 30,),
+       Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+         children: [
+           Text('Subtotal',style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700)),
+           Text(currentSubtotal.toStringAsFixed(2),style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700,))
+         ],
+       ),
+       const   SizedBox(height: 20,),
+      Divider(color: Colors.grey,),
+       SizedBox(height: 20,),
+       Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+         children: [
+           Text('Total',style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700)),
+           Text( total.toStringAsFixed(2),style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700))
+         ],
+       ),
+      const  SizedBox(height: 30,),
+      Container
+      (
+        height: 50,
+        decoration: BoxDecoration(
+          color: Colors.black,
+          borderRadius: BorderRadius.circular(8)
+        ),
+        child: Center(child: TextButton( 
+          // inside CartScreen where you push the OrderSummaryScreen
+onPressed: () async {
+  final result = await Navigator.of(context).push<Map<String, dynamic>>(
+    MaterialPageRoute(
+      builder: (ctx) => OrderSummaryScreen(
+        subtotal: currentSubtotal,
+        Total: total,
+        shipping: shippingCost,
+        quantities: Map<int,int>.from(itemQuantities),
+      ),
+    ),
+  );
 
                                 value: 'F',
                                 groupValue: shippingType,
@@ -410,6 +498,7 @@ class _CartScreenState extends State<CartScreen> {
                 ],
               ),
             ),
+         
           ],
         ),
       ),

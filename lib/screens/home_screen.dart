@@ -19,7 +19,7 @@ class HomeScreen extends StatelessWidget {
               CarouselWidget(),
               Bundle(),
               NewArrival(),
-
+      
               AboutUsSection(),
               //  FooterWidget(),
             ],

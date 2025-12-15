@@ -4,6 +4,7 @@ import 'package:furni_mobile_app/dummy items/data_required.dart';
 import 'package:furni_mobile_app/Header/header.dart';
 import 'package:furni_mobile_app/dummy items/myItems.dart';
 import 'package:intl/intl.dart';
+import 'package:furni_mobile_app/screens/home_screen.dart';
 
 class OrderCompleteScreen extends StatefulWidget {
   const OrderCompleteScreen({
@@ -44,24 +45,16 @@ class _OrderCompleteScreenState extends State<OrderCompleteScreen> {
     return Scaffold(
       appBar: AppBar(title: Header()),
       body: ListView(
-        padding: const EdgeInsets.all(15.0),
-
-        children: [
-          Column(
-            children: [
-              Row(
-                children: [
-                  TextButton.icon(
-                    onPressed: () {},
-                    label: Text(
-                      'back to home',
-                      style: TextStyle(color: Colors.black),
-                    ),
-                    icon: Icon(
-                      Icons.arrow_back_ios,
-                      size: 11,
-                      color: Colors.black54,
-                    ),
+          
+      
+              padding: const EdgeInsets.all(15.0),
+        
+                children: [Column(
+                  children: [
+                  Row(
+                    children: [
+                      TextButton.icon(onPressed: (){Navigator.of(context).push(MaterialPageRoute(builder: (ctx)=> HomeScreen()));}, label:Text('back to home', style: TextStyle(color: Colors.black),), icon:Icon(Icons.arrow_back_ios, size: 11,color: Colors.black54,) ,),
+                    ],
                   ),
                 ],
               ),

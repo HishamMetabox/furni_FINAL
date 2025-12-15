@@ -14,15 +14,13 @@ class ProductWidget extends StatefulWidget {
   final CartItem item;
   final void Function(double itemprice) onPriceChanged;
   final void Function(int quantity) onQuantityChanged;
-  final int initialQuantity;
-
+    final int initialQuantity;
   @override
   State<ProductWidget> createState() => _ProductWidgetState();
 }
 
 class _ProductWidgetState extends State<ProductWidget> {
-  int selectedQty = 1;
-
+   int selectedQty = 1;
   @override
   void initState() {
     super.initState();
@@ -51,96 +49,72 @@ class _ProductWidgetState extends State<ProductWidget> {
       imageProvider = NetworkImage(url);
     } else {
       final assetPath = url.startsWith('assets/') ? url : 'assets/images/$url';
-      imageProvider = AssetImage(assetPath);
-    }
-    return SizedBox(
-      height: 190,
-      width: 410,
-      child: Card(
-        child: Row(
-          children: [
-            Container(
-              height: 150,
-              width: 120,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: imageProvider, // to be added
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 20),
-              child: Column(
-                children: [
-                  SizedBox(height: 30),
-                  Text(
-                    widget.item.productName,
-                    style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  // to be added
-                  Text(
-                    widget.item.property,
-                    style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 12,
-                      color: Color.fromARGB(255, 102, 110, 114),
-                    ),
-                  ), // to be added
-                  SizedBox(height: 12),
-                  QuantityCounter(
-                    initialQuantity: widget.item.quantity, // <-- Now it works
+      imageProvider = AssetImage(assetPath);}
+    return
+    SizedBox(
+        height: 190,
+        width: double.infinity,
+        child: Card(
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 10),
+                  child: Row(
+                        
+                       children: [
+                        
+                         Container(
+                          height: 150,
+                           width: 100,
+                           decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: imageProvider,// to be added
+                            fit: BoxFit.cover),
+                           ),
+                        
+                          ),
+                          Spacer(),
+                       
+                          
+                           Column(
+                            children: [
+                    
+                              SizedBox(height: 30,),
+                              Text(widget.item.productName, style: GoogleFonts.inter(fontWeight:FontWeight.w600,fontSize: 14),),
+                              SizedBox(height: 20,) ,
+                              // to be added
+                          Text(widget.item.property
+                           ,style: GoogleFonts.inter(fontWeight: FontWeight.w400,fontSize: 12, color:Color.fromARGB(255, 102, 110, 114),),),// to be added
+                          SizedBox(height: 12,),
+                         QuantityCounter(
+                    initialQuantity: widget.item.quantity,  // <-- Now it works
                     onQuantityChanged: (value) {
                       setState(() {
                         selectedQty = value;
-                        widget.item.quantity = value; // <-- Update the model
+                        widget.item.quantity = value;    // <-- Update the model
                       });
-
+                  
                       widget.onQuantityChanged(value);
                       widget.onPriceChanged(widget.item.price * value);
-                    },
-                    max: 9,
+                    },max: 9,
                   ),
-                ],
-              ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.only(top: 30),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: '\$',
-                          style: GoogleFonts.inter(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
+                  
+                    ],
                           ),
+                        
+                   Spacer() ,
+                                Padding(
+                  padding: const EdgeInsets.only(top: 30),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                    
+                      RichText(text:TextSpan(children:[TextSpan(text:'\$',style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14)), TextSpan(text:'$itemPrice', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14, ))] )),//
+                      IconButton(onPressed:(){}, icon: Icon(Icons.close))
+                  
+                    ],
+                  ),
+                    
                         ),
-                        TextSpan(
-                          text: '$itemPrice',
-                          style: GoogleFonts.inter(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ), //
-                  IconButton(onPressed: () {}, icon: Icon(Icons.close)),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+                      ]),
+                )));
   }
 }

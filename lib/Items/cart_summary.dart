@@ -37,133 +37,137 @@ class _CartSummaryState extends State<CartSummary>{
   @override
   Widget build (context){
  
-   return Container(
-    height: 540,
-    width:380 ,
-    decoration: BoxDecoration(
-      
-      border: Border.all(width: 1, color: Colors.black), borderRadius: BorderRadius.circular(8)
-    ),
-     child: Padding(
-       padding: const EdgeInsets.all(20.0),
-       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-        const  SizedBox(height: 5,),
-        Text('Cart Summary',style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600)),
-        const SizedBox(height: 20,),
-           Container(
-            height: 60,
-            decoration: BoxDecoration(
-              border: Border.all(width: 1, color: Colors.black,), borderRadius: BorderRadius.circular(5)
-            ),
-             child: Padding(
-               padding: const EdgeInsets.only(top: 3),
-               child: RadioListTile(
-             
+   return SizedBox(
+    width: MediaQuery.of(context).size.width,
+     child: Container(
+      height: 540,
+      decoration: BoxDecoration(
+        
+        border: Border.all(width: 1, color: Colors.black), borderRadius: BorderRadius.circular(8)
+      ),
+       child: Padding(
+         padding: const EdgeInsets.all(20.0),
+         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+          const  SizedBox(height: 5,),
+          Text('Cart Summary',style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600)),
+          const SizedBox(height: 20,),
+             Container(
+              height: 60,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                border: Border.all(width: 1, color: Colors.black,), borderRadius: BorderRadius.circular(5)
+              ),
+               child: Padding(
+                 padding: const EdgeInsets.only(top: 3),
+                 child: RadioListTile(
+               
+                  activeColor: Colors.black,
+                  title: Row(
+                    
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Free Shipping',style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600)),
+                      Text('0.00', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600),)// to be added
+                    ],
+                  ),
+                  
+                  value: 'F', 
+                  groupValue: shippingType,
+                  onChanged: (value) => setState(() {
+                    shippingType = value!;
+                  }),
+                   visualDensity: const VisualDensity(horizontal: -4.0),
+                  ),
+               ),
+             ),
+            const  SizedBox(height: 16,),
+            Container(
+              height: 60,
+     
+              decoration: BoxDecoration(
+                border: Border.all(width: 1, color: Colors.black), borderRadius: BorderRadius.circular(5)
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(top: 3),
+                child: RadioListTile(
                 activeColor: Colors.black,
                 title: Row(
-                  
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Free Shipping',style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600)),
-                    Text('0.00', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600),)// to be added
+                    Text('Express Shipping', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600),),
+                    Text('+15.00',style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600))
                   ],
                 ),
-                
-                value: 'F', 
+                value: 'E', 
                 groupValue: shippingType,
                 onChanged: (value) => setState(() {
                   shippingType = value!;
                 }),
-                 visualDensity: const VisualDensity(horizontal: -4.0),
+                visualDensity: const VisualDensity(horizontal: -4.0),
                 ),
-             ),
-           ),
-          const  SizedBox(height: 16,),
-          Container(
-            height: 60,
-            decoration: BoxDecoration(
-              border: Border.all(width: 1, color: Colors.black), borderRadius: BorderRadius.circular(5)
-            ),
-            child: Padding(
-              padding: const EdgeInsets.only(top: 3),
-              child: RadioListTile(
-              activeColor: Colors.black,
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Express Shipping', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600),),
-                  Text('+15.00',style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600))
-                ],
               ),
-              value: 'E', 
-              groupValue: shippingType,
-              onChanged: (value) => setState(() {
+            ),
+              const SizedBox(height: 16,),
+            Container(
+              height: 60,
+              decoration: BoxDecoration(
+                border: Border.all(width: 1, color:Colors.black ),borderRadius: BorderRadius.circular(5)
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(top: 3),
+                child: RadioListTile(
+                activeColor: Colors.black,
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Pick Up',style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600)),
+                    Text('%21.00',style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600))
+                  ],
+                ),
+                value: 'P',
+                groupValue: shippingType,
+                onChanged: (value) {
+                setState(() {
                 shippingType = value!;
-              }),
-              visualDensity: const VisualDensity(horizontal: -4.0),
+                    });
+                  }, 
+                  
+               visualDensity: const VisualDensity(horizontal: -4.0),
+                ),
               ),
             ),
+           const SizedBox(height: 30,),
+         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+           children: [
+             Text('Subtotal',style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700)),
+             Text(subtotal.toStringAsFixed(2),style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700,))
+           ],
+         ),
+         const   SizedBox(height: 20,),
+        Divider(color: Colors.grey,),
+         SizedBox(height: 20,),
+         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+           children: [
+             Text('Total',style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700)),
+             Text( total.toStringAsFixed(2),style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700))
+           ],
+         ),
+        const  SizedBox(height: 30,),
+        Container
+        (width: double.infinity,
+          height: 50,
+          decoration: BoxDecoration(
+            color: Colors.black,
+            borderRadius: BorderRadius.circular(8)
           ),
-            const SizedBox(height: 16,),
-          Container(
-            height: 60,
-            decoration: BoxDecoration(
-              border: Border.all(width: 1, color:Colors.black ),borderRadius: BorderRadius.circular(5)
-            ),
-            child: Padding(
-              padding: const EdgeInsets.only(top: 3),
-              child: RadioListTile(
-              activeColor: Colors.black,
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Pick Up',style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600)),
-                  Text('%21.00',style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600))
-                ],
-              ),
-              value: 'P',
-              groupValue: shippingType,
-              onChanged: (value) {
-              setState(() {
-              shippingType = value!;
-                  });
-                }, 
-                
-             visualDensity: const VisualDensity(horizontal: -4.0),
-              ),
-            ),
-          ),
-         const SizedBox(height: 30,),
-       Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-         children: [
-           Text('Subtotal',style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700)),
-           Text(subtotal.toStringAsFixed(2),style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700,))
-         ],
+          child: Center(child: TextButton( 
+            onPressed: (){}, child: Text('CheckOut', style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w500, color: Colors.white)))))
+         ],),
        ),
-       const   SizedBox(height: 20,),
-      Divider(color: Colors.grey,),
-       SizedBox(height: 20,),
-       Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-         children: [
-           Text('Total',style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700)),
-           Text( total.toStringAsFixed(2),style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700))
-         ],
-       ),
-      const  SizedBox(height: 30,),
-      Container
-      (width: 350,
-        height: 50,
-        decoration: BoxDecoration(
-          color: Colors.black,
-          borderRadius: BorderRadius.circular(8)
-        ),
-        child: Center(child: TextButton( 
-          onPressed: (){}, child: Text('CheckOut', style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w500, color: Colors.white)))))
-       ],),
      ),
    );
   }

@@ -11,6 +11,7 @@ class Header extends StatefulWidget {
 
 class _HeaderState extends State<Header> {
   bool _showSearch = false;
+ 
   final TextEditingController _searchController = TextEditingController();
 
   @override
@@ -19,21 +20,42 @@ class _HeaderState extends State<Header> {
     super.dispose();
   }
 
-  Widget _searchIcon() {
-    return IconButton(
-      icon: SvgPicture.asset('assets/images/search.svg', width: 24, height: 24),
-      onPressed: () {
-        setState(() {
-          _showSearch = !_showSearch;
-        });
-      },
+  Widget _searchIcon(){
+    return MouseRegion(
+      onEnter: (_) {
+      setState(() {
+        _showSearch = true;   
+      });
+    },
+    onExit: (_) {
+       setState(() {
+        _showSearch = false;   
+      });
+      
+    },
+      child: IconButton(
+       
+                  icon: SvgPicture.asset(
+                    'assets/images/search.svg',
+                    width: 24,
+                    height: 24,
+                  ),
+                 
+                  onPressed: () {
+                    setState(() {
+                      debugPrint('Search for: ${_searchController.text}');
+                      _searchController.clear();
+                      _showSearch = !_showSearch;
+                    });
+                  },
+                ),
     );
   }
 
   Widget _buildSearchBar() {
     return Container(
       height: 35,
-      width: 160,
+      width: 200,
       padding: const EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(32),
@@ -42,13 +64,12 @@ class _HeaderState extends State<Header> {
       ),
       child: Center(
         child: TextFormField(
+          
           controller: _searchController,
           decoration: InputDecoration(
             hintText: 'Type something...',
-            hintStyle: GoogleFonts.inter(
-              fontWeight: FontWeight.w400,
-              fontSize: 14,
-            ),
+            hintStyle: GoogleFonts.inter(fontWeight: FontWeight.w400, fontSize: 14),
+            suffixIcon: _searchIcon(),
             border: InputBorder.none,
             isDense: true,
             contentPadding: const EdgeInsets.symmetric(vertical: 8),
@@ -56,6 +77,7 @@ class _HeaderState extends State<Header> {
           textInputAction: TextInputAction.search,
           onFieldSubmitted: (value) {
             debugPrint('Search for: $value');
+            _searchController.clear();
           },
         ),
       ),
@@ -76,8 +98,12 @@ class _HeaderState extends State<Header> {
 
           const Spacer(),
           if (_showSearch) _buildSearchBar(),
-
-          Row(children: [_searchIcon()]),
+        
+          Row(
+            children: [
+          if (!_showSearch) _searchIcon(),
+            ],
+          ),
         ],
       ),
     );

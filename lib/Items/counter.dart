@@ -74,8 +74,8 @@ class _QuantityCounterState extends State<QuantityCounter> {
     final atMin = quantity <= widget.min;
 
     return Container(
-      height: 45,
-      width: 120,
+      height: 40,
+      width: 110,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(5),
         border: Border.all(

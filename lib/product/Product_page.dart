@@ -6,6 +6,7 @@ import 'package:furni_mobile_app/product/widget/display_images.dart';
 import 'package:furni_mobile_app/product/widget/navigation.dart';
 import 'package:furni_mobile_app/product/widget/review.dart';
 
+
 class ProductPage extends StatelessWidget {
   const ProductPage({super.key, required this.onQuantityChanged});
   final void Function(int) onQuantityChanged;
@@ -36,6 +37,7 @@ class ProductPage extends StatelessWidget {
                 ),
               ),
             ),
+            
           ],
         ),
       ),

@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:furni_mobile_app/screens/splash_screen.dart';
-
+import 'package:furni_mobile_app/screens/cart_screen.dart';
+import 'package:furni_mobile_app/screens/home_screen.dart';
+import 'package:furni_mobile_app/screens/homme.dart';
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  runApp(
-    MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(body: const SplashScreen()),
-    ),
-  );
+  runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home: CartScreen(),
+  ));
 }
