@@ -1,6 +1,10 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:furni_mobile_app/screens/cart_screen.dart';
+// import 'package:furni_mobile_app/screens/profile_screen.dart';
+// import 'package:furni_mobile_app/screens/shop_screen.dart';
+import 'package:furni_mobile_app/screens/home_screen.dart';
 
 class GlassFloatingNavBar extends StatefulWidget {
   const GlassFloatingNavBar({super.key});
@@ -41,6 +45,7 @@ class _GlassFloatingNavBarState extends State<GlassFloatingNavBar> {
                     ),
                   ],
                 ),
+
                 child: BottomNavigationBar(
                   backgroundColor: Colors.transparent,
                   elevation: 0,
@@ -48,33 +53,68 @@ class _GlassFloatingNavBarState extends State<GlassFloatingNavBar> {
                   selectedItemColor: Colors.black,
                   unselectedItemColor: Colors.black54,
                   currentIndex: _selectedIndex,
-                  onTap: (i) => setState(() => _selectedIndex = i),
+                  onTap: (_) {}, // disable default navigation
+
                   items: [
                     BottomNavigationBarItem(
-                      icon: SvgPicture.asset(
-                        'assets/images/home2.svg',
-                        width: 26,
+                      icon: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => HomeScreen()),
+                          );
+                        },
+                        child: SvgPicture.asset(
+                          'assets/images/home2.svg',
+                          width: 26,
+                        ),
                       ),
                       label: "Home",
                     ),
+
                     BottomNavigationBarItem(
-                      icon: SvgPicture.asset(
-                        'assets/images/shop-page.svg',
-                        width: 26,
+                      icon: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => HomeScreen()),
+                          );
+                        },
+                        child: SvgPicture.asset(
+                          'assets/images/shop-page.svg',
+                          width: 26,
+                        ),
                       ),
                       label: "Shop",
                     ),
                     BottomNavigationBarItem(
-                      icon: SvgPicture.asset(
-                        'assets/images/cart_logo.svg',
-                        width: 26,
+                      icon: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => CartScreen()),
+                          );
+                        },
+                        child: SvgPicture.asset(
+                          'assets/images/cart_logo.svg',
+                          width: 26,
+                        ),
                       ),
                       label: "Cart",
                     ),
+
                     BottomNavigationBarItem(
-                      icon: SvgPicture.asset(
-                        'assets/images/user-circle.svg',
-                        width: 26,
+                      icon: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => HomeScreen()),
+                          );
+                        },
+                        child: SvgPicture.asset(
+                          'assets/images/user-circle.svg',
+                          width: 26,
+                        ),
                       ),
                       label: "Profile",
                     ),
