@@ -57,7 +57,20 @@ class _HeaderState extends State<Header> {
           
           controller: _searchController,
           decoration: InputDecoration(
-            prefixIcon: IconButton(onPressed: clear,icon: Icon(Icons.close)),         
+            prefixIcon: Padding(
+              padding: const EdgeInsets.only(right: 14),
+              child: IconButton(
+                onPressed: (){clear();},
+                icon: const Icon(Icons.close),
+                iconSize: 18,
+                padding: EdgeInsets.zero, // remove internal padding
+                constraints: const BoxConstraints(
+                  minWidth: 24,
+                  minHeight: 24,
+                ),
+              
+              ),
+            ),         
             hintText: 'Search...',
             hintStyle: GoogleFonts.inter(fontWeight: FontWeight.w400, fontSize: 14),
             suffixIcon: _searchIcon(),
