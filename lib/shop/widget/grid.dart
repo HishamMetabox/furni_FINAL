@@ -21,6 +21,7 @@ class _ProductGridState extends State<ProductGrid> {
     return GridView.builder(
       
       padding: const EdgeInsets.all(16),
+    
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         crossAxisSpacing: 6,
@@ -65,16 +66,6 @@ class _ProductGridState extends State<ProductGrid> {
   ),
                 child: Stack(
                   children: [
-                    Positioned(
-                      top: 14,
-                      left: 14,
-                      child: Column(
-                        children: [
-                          _badge('New', Colors.white, Colors.black),
-                        
-                        ],
-                      ),
-                    ),
 
                     /// BUTTON (EXCLUDED FROM TAP)
                     Positioned(
@@ -103,7 +94,7 @@ class _ProductGridState extends State<ProductGrid> {
 
             /// PRODUCT DETAILS
             Padding(
-              padding: const EdgeInsets.only(left: 10, top: 6),
+              padding: const EdgeInsets.only(left: 16, top: 6),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -111,9 +102,8 @@ class _ProductGridState extends State<ProductGrid> {
                   const SizedBox(height: 4),
                   Text(
                     item.name,
-                    maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontWeight: FontWeight.w500),
+                    style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
                   ),
                   const SizedBox(height: 2),
                   Text(

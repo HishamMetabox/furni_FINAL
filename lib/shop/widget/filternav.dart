@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:furni_mobile_app/shop/widget/filter.dart';
+import 'package:furni_mobile_app/shop/widget/sortby.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:furni_mobile_app/shop/widget/productFilter.dart';
 
@@ -66,7 +67,11 @@ class Filternav extends StatelessWidget {
           /// SORT BUTTON (Optional)
           TextButton(
             onPressed: () {
-              // Add sort bottom sheet if needed
+              showBottomSheet(context: context, 
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                ),
+              builder: (ctx) => const Sortby(),);
             },
             child: Row(
               children: [
