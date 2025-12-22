@@ -14,55 +14,68 @@ class ProductPage extends StatelessWidget {
   const ProductPage({super.key, required this.onQuantityChanged, required this.product_id});
   final void Function(int) onQuantityChanged;
   final int product_id;
+
   @override
   Widget build(BuildContext context) {
-  
-    return  FutureBuilder<List<Product>>(
+    return FutureBuilder<List<Product>>(
       future: ApiService.fetchProducts(),
       builder: (context, snapshot) {
-          final product = snapshot.data!
-            .firstWhere((p) => p.id == product_id);
+        // 1. Handle Loading State
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+        }
+
+        // 2. Handle Error State
+        if (snapshot.hasError || !snapshot.hasData) {
+          return Scaffold(body: Center(child: Text("Error: ${snapshot.error ?? 'No data found'}")));
+        }
+
+        // 3. Find the specific product safely
+        final productList = snapshot.data!;
+        final product = productList.firstWhere(
+          (p) => p.id == product_id,
+          orElse: () => productList.first, // Fallback to first if ID missing
+        );
+
         return Scaffold(
-          appBar: AppBar(
-            title: Header(),
-          ),
+          appBar: AppBar(title: const Header()),
           body: SingleChildScrollView(
-            child: Column(
-              children: [
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      children: [
-                        Navigation(),
-                        SizedBox(height: 16),
-                        SizedBox(height: 414, width: 311, child: DisplayImages(images: product.images)),
-                        SizedBox(height: 16),
-                        DetailsCard(
-                        name:  product.name, 
-                        category: product.category, 
-                        colours: product.colours, 
-                        description: product.description, 
-                        measurements: product.measurements, 
-                        price: product.price, 
-                        rating: product.rating, 
-                        quantity: product.quantity),
-                        SizedBox(height: 20),
-                        Divider(thickness: 1.5),
-                        SizedBox(height: 15),
-                        AddReview(),
-                        SizedBox(height: 20),
-                        Review(),
-                      ],
-                    ),
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  const Navigation(),
+                  const SizedBox(height: 16),
+                  // Ensure DisplayImages can handle the list provided
+                  SizedBox(
+                    height: 414, 
+                    width: 311, 
+                    child: DisplayImages(images: product.images),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 16),
+                  DetailsCard(
+                    name: product.name,
+                    category: product.category,
+                    colours: product.colours,
+                    description: product.description,
+                    measurements: product.measurements,
+                    price: product.price,
+                    rating: product.rating,
+                    quantity: product.quantity,
+                  ),
+                  const SizedBox(height: 20),
+                  const Divider(thickness: 1.5),
+                  const SizedBox(height: 15),
+                  const AddReview(),
+                  const SizedBox(height: 20),
+                  const Review(),
+                ],
+              ),
             ),
           ),
-          bottomNavigationBar: SizedBox(height: 90,child: GlassFloatingNavBar(),),
+          bottomNavigationBar: const SizedBox(height: 90, child: GlassFloatingNavBar()),
         );
-      }
+      },
     );
   }
 }

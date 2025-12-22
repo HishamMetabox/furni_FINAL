@@ -107,7 +107,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
             RangeSlider(
               values: _currentRange,
               min: 0,
-              max: 234,
+              max: 10000,
               activeColor: Colors.black,
               inactiveColor: Colors.grey.shade300,
               onChanged: (values) => setState(() => _currentRange = values),
