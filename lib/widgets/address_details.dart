@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:furni_mobile_app/widgets/account details.dart';
-import 'package:furni_mobile_app/widgets/user_profile.dart';
+import 'package:furni_mobile_app/models/user_model.dart';
+
 class AddressDetails extends StatelessWidget {
-  const AddressDetails({super.key});
+  const AddressDetails({
+    super.key,
+    required this.currentUser,
+    required this.isLoading,
+  });
+
+  final AppUser? currentUser;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +56,16 @@ class AddressDetails extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 10),
-                  Text(UserProfile.displayName, style: titleStyle),
+                  if (isLoading)
+                    const CircularProgressIndicator()
+                  else if (currentUser != null)
+                    Column(
+                      children: [
+                        Text(currentUser!.displayName, style: titleStyle),
+                      ],
+                    )
+                  else
+                    const Text('Failed to load user'),
                   Text('(+1) 234 567 890', style: titleStyle),
                   Text(
                     '345 Long Island, New York, United States',

@@ -3,7 +3,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:furni_mobile_app/screens/home_screen.dart';
 import 'package:furni_mobile_app/screens/signup_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:furni_mobile_app/services/auth_login_service.dart';
+import 'package:furni_mobile_app/services/auth_service.dart';
+import 'package:furni_mobile_app/models/user_model.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -38,19 +39,29 @@ class _LoginScreenState extends State<LoginScreen> {
 
     setState(() => isLoading = true);
 
-    final success = await authService.signIn(identifier, password);
+    try {
+      // signIn returns AppUser? (nullable)
+      final AppUser? user = await authService.signIn(identifier, password);
 
-    setState(() => isLoading = false);
+      setState(() => isLoading = false);
 
-    if (success) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
-      );
-    } else {
+      if (user != null) {
+        // Login successful, navigate to HomeScreen
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
+        );
+      } else {
+        // Login failed
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Invalid credentials')));
+      }
+    } catch (e) {
+      setState(() => isLoading = false);
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Invalid credentials')));
+      ).showSnackBar(SnackBar(content: Text('An error occurred: $e')));
     }
   }
 
@@ -60,17 +71,21 @@ class _LoginScreenState extends State<LoginScreen> {
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Logo + Image
                 Stack(
                   children: [
-                    Center(
-                      child: Image.asset(
-                        'assets/images/login.png',
-                        fit: BoxFit.cover,
+                    Padding(
+                      padding: const EdgeInsets.only(top: 25.0),
+                      child: Center(
+                        child: Image.asset(
+                          'assets/images/login.png',
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
                     Padding(
@@ -87,6 +102,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 30),
 
+                // Title
                 Text(
                   'Sign In',
                   style: GoogleFonts.poppins(
@@ -97,6 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 8),
 
+                // Sign up link
                 Row(
                   children: [
                     Text(
@@ -115,6 +132,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Text(
                         'Sign up',
                         style: GoogleFonts.inter(
+                          fontSize: 16,
                           color: const Color(0xFF1E485B),
                           fontWeight: FontWeight.bold,
                         ),
@@ -125,6 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 10),
 
+                // Username / Email field
                 TextField(
                   controller: usernameController,
                   decoration: const InputDecoration(
@@ -135,6 +154,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 20),
 
+                // Password field
                 TextField(
                   controller: passwordController,
                   obscureText: !passwordVisible,
@@ -158,6 +178,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 15),
 
+                // Remember me checkbox
                 Row(
                   children: [
                     Checkbox(
@@ -174,12 +195,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 15),
 
+                // Sign In button
                 Center(
                   child: SizedBox(
                     width: 311,
                     height: 44,
                     child: ElevatedButton(
-                      onPressed: isLoading ? null : loginUser,
+                      onPressed: loginUser,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF184E60),
                         shape: RoundedRectangleBorder(
