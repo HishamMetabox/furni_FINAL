@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:furni_mobile_app/screens/home_screen.dart';
 import 'package:furni_mobile_app/widgets/footer/profile_picture.dart';
@@ -14,8 +15,9 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
   final TextEditingController displayNameController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  String? selectedImagePath;
 
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final ProfileService profileService = ProfileService();
 
   bool isLoading = false;
@@ -28,37 +30,47 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
     super.dispose();
   }
 
-  /// =========================
-  /// SAVE PROFILE TO STRAPI
-  /// =========================
   Future<void> _saveProfile() async {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => isLoading = true);
 
-    final success = await profileService.updateProfile(
-      firstName: firstNameController.text.trim(),
-      lastName: lastNameController.text.trim(),
-      displayName: displayNameController.text.trim(),
-    );
+    try {
+      print('IMAGE PATH: $selectedImagePath');
+      if (selectedImagePath != null) {
+        print('IMAGE EXISTS: ${File(selectedImagePath!).existsSync()}');
+      }
 
-    setState(() => isLoading = false);
-
-    if (!mounted) return;
-
-    if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Profile saved successfully')),
+      final success = await profileService.createUserProfile(
+        firstName: firstNameController.text.trim(),
+        lastName: lastNameController.text.trim(),
+        displayName: displayNameController.text.trim(),
+        imagePath: selectedImagePath, // ✅ USE PICKER PATH DIRECTLY
       );
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
-      );
-    } else {
+      if (!mounted) return;
+
+      setState(() => isLoading = false);
+
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Profile saved successfully')),
+        );
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
+        );
+      } else {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Failed to save profile')));
+      }
+    } catch (e) {
+      setState(() => isLoading = false);
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Failed to save profile')));
+      ).showSnackBar(SnackBar(content: Text('An error occurred: $e')));
     }
   }
 
@@ -85,71 +97,88 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
               style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 15),
-            const ProfilePicture(),
+            Center(
+              child: ProfilePicture(
+                imagePath: selectedImagePath,
+                onImageSelected: (path) {
+                  setState(() {
+                    selectedImagePath = path;
+                  });
+                },
+              ),
+            ),
             const SizedBox(height: 30),
 
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 35),
               child: Form(
                 key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Your details',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 15.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Your details',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 10),
+                      const SizedBox(height: 10),
 
-                    const Text('FIRST NAME'),
-                    const SizedBox(height: 5),
-                    TextFormField(
-                      controller: firstNameController,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
+                      const Text('FIRST NAME'),
+                      const SizedBox(height: 5),
+                      TextFormField(
+                        controller: firstNameController,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                        ),
+                        validator: (value) => value == null || value.isEmpty
+                            ? 'First name is required'
+                            : null,
                       ),
-                      validator: (value) =>
-                          value == null || value.isEmpty ? 'Required' : null,
-                    ),
 
-                    const SizedBox(height: 15),
+                      const SizedBox(height: 15),
 
-                    const Text('LAST NAME'),
-                    const SizedBox(height: 5),
-                    TextFormField(
-                      controller: lastNameController,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
+                      const Text('LAST NAME'),
+                      const SizedBox(height: 5),
+                      TextFormField(
+                        controller: lastNameController,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                        ),
+                        validator: (value) => value == null || value.isEmpty
+                            ? 'Last name is required'
+                            : null,
                       ),
-                      validator: (value) =>
-                          value == null || value.isEmpty ? 'Required' : null,
-                    ),
 
-                    const SizedBox(height: 15),
+                      const SizedBox(height: 15),
 
-                    const Text('DISPLAY NAME'),
-                    const SizedBox(height: 5),
-                    TextFormField(
-                      controller: displayNameController,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
+                      const Text('DISPLAY NAME'),
+                      const SizedBox(height: 5),
+                      TextFormField(
+                        controller: displayNameController,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                        ),
+                        validator: (value) => value == null || value.isEmpty
+                            ? 'Display name is required'
+                            : null,
                       ),
-                      validator: (value) =>
-                          value == null || value.isEmpty ? 'Required' : null,
-                    ),
 
-                    const SizedBox(height: 10),
-                    const Text(
-                      'This name will be visible in reviews and account section',
-                      style: TextStyle(
-                        fontStyle: FontStyle.italic,
-                        color: Colors.grey,
+                      const SizedBox(height: 10),
+                      const Text(
+                        'This name will be visible in reviews and account section',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
+                          fontStyle: FontStyle.italic,
+                          color: Colors.grey,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

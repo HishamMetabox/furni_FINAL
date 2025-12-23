@@ -1,10 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:furni_mobile_app/widgets/user_profile.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:furni_mobile_app/models/user_model.dart';
+import 'package:furni_mobile_app/services/update_profile.dart';
+
+String lowercaseExceptFirst(String input) {
+  if (input.isEmpty) return input;
+  return input[0].toUpperCase() + input.substring(1).toLowerCase();
+}
 
 class AccountDetails extends StatefulWidget {
-  const AccountDetails({super.key, required this.onProfileUpdated});
+  const AccountDetails({
+    super.key,
+    required this.onProfileUpdated,
+    required this.currentUser,
+    required this.isLoading,
+  });
+
   final VoidCallback onProfileUpdated;
+  final AppUser? currentUser;
+  final bool isLoading;
 
   @override
   State<AccountDetails> createState() => _AccountDetailsState();
@@ -36,9 +51,24 @@ class _AccountDetailsState extends State<AccountDetails> {
   @override
   void initState() {
     super.initState();
-    _firstName.text = UserProfile.firstName;
-    _lastName.text = UserProfile.lastName;
-    _displayName.text = UserProfile.displayName;
+    _populateFields();
+  }
+
+  @override
+  void didUpdateWidget(covariant AccountDetails oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.currentUser != oldWidget.currentUser) {
+      _populateFields();
+    }
+  }
+
+  void _populateFields() {
+    if (widget.currentUser != null) {
+      _firstName.text = widget.currentUser!.firstName;
+      _lastName.text = widget.currentUser!.lastName;
+      _displayName.text = widget.currentUser!.displayName;
+      _email.text = widget.currentUser!.email;
+    }
   }
 
   void _updateProfile() {
@@ -69,7 +99,6 @@ class _AccountDetailsState extends State<AccountDetails> {
           child: SingleChildScrollView(
             child: Form(
               key: _formkey,
-
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
@@ -86,159 +115,104 @@ class _AccountDetailsState extends State<AccountDetails> {
                       const Spacer(),
                       IconButton(
                         onPressed: () {
-                          _firstName.text = UserProfile.firstName;
-                          _lastName.text = UserProfile.lastName;
-                          _displayName.text = UserProfile.displayName;
+                          _populateFields();
                           Navigator.of(context).pop();
                         },
-                        icon: Icon(Icons.close),
+                        icon: const Icon(Icons.close),
                       ),
                     ],
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const SizedBox(height: 20),
-
-                        Text(
-                          'FIRST NAME *',
-                          style: GoogleFonts.inter(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            height: 1.0,
-                            letterSpacing: 0,
-                            color: Color(0xff6C7275),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-
-                        TextFormField(
-                          controller: _firstName,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            isDense: true,
-                            contentPadding: EdgeInsets.symmetric(
-                              vertical: 12,
-                              horizontal: 12,
-                            ),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.trim() == '') {
-                              return 'First name is required';
-                            }
-                            return null;
-                          },
-                        ),
-
-                        const SizedBox(height: 25),
-                        Text(
-                          'LAST NAME *',
-                          style: GoogleFonts.inter(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            height: 1.0,
-                            letterSpacing: 0,
-                            color: Color(0xff6C7275),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-
-                        TextFormField(
-                          controller: _lastName,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            isDense: true,
-                            contentPadding: EdgeInsets.symmetric(
-                              vertical: 12,
-                              horizontal: 12,
-                            ),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.trim() == '') {
-                              return 'Last name is required';
-                            }
-                            return null;
-                          },
-                        ),
-
-                        const SizedBox(height: 25),
-                        Text(
-                          'DISPLAY NAME *',
-                          style: GoogleFonts.inter(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            height: 1.0,
-                            letterSpacing: 0,
-                            color: Color(0xff6C7275),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        TextFormField(
-                          controller: _displayName,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            isDense: true,
-                            contentPadding: EdgeInsets.symmetric(
-                              vertical: 12,
-                              horizontal: 12,
-                            ),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.trim() == '') {
-                              return 'Display name is required';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 10),
-                        const Text(
-                          'This will be how your name will be displayed in the account section and in reviews',
-                          style: TextStyle(
-                            fontStyle: FontStyle.italic,
-                            color: Color.fromARGB(255, 118, 113, 113),
-                          ),
-                        ),
-                        const SizedBox(height: 15),
-                        SizedBox(
-                          width: 400,
-                          height: 50,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.black,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            onPressed: () {
-                              if (_formkey.currentState!.validate()) {
-                                UserProfile.displayName = _displayName.text;
-                                widget.onProfileUpdated();
-
-                                Navigator.pop(context); // close bottom sheet
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      'Profile updated successfully!',
-                                    ),
-                                  ),
-                                );
-                              }
-                            },
-                            child: const Text(
-                              'Save',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                  const SizedBox(height: 20),
+                  _buildTextField('FIRST NAME *', _firstName),
+                  const SizedBox(height: 25),
+                  _buildTextField('LAST NAME *', _lastName),
+                  const SizedBox(height: 25),
+                  _buildTextField('DISPLAY NAME *', _displayName),
+                  const SizedBox(height: 10),
+                  const Text(
+                    'This will be how your name will be displayed in the account section and in reviews',
+                    style: TextStyle(
+                      fontStyle: FontStyle.italic,
+                      color: Color.fromARGB(255, 118, 113, 113),
                     ),
                   ),
+                  const SizedBox(height: 15),
+                  Center(
+                    child: SizedBox(
+                      width: 200,
+                      height: 52,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onPressed: () async {
+                          if (_formkey.currentState!.validate()) {
+                            // Show loading indicator
+                            showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (_) => const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            );
+
+                            // Get userId and JWT token from your AppUser instance
+                            final userId = widget.currentUser!.id
+                                .toString(); // assuming id exists
+                            final jwtToken = widget
+                                .currentUser!
+                                .jwtToken!; // you must store JWT in AppUser
+
+                            // Call Strapi API
+                            final success = await updateProfileOnStrapi(
+                              userId: userId,
+                              firstName: _firstName.text,
+                              lastName: _lastName.text,
+                              displayName: _displayName.text,
+                              jwtToken: jwtToken,
+                            );
+
+                            Navigator.pop(context); // close loading
+
+                            if (success) {
+                              // Update the AppUser instance locally
+                              setState(() {
+                                widget.currentUser!
+                                  ..firstName = _firstName.text
+                                  ..lastName = _lastName.text
+                                  ..displayName = _displayName.text;
+                              });
+
+                              widget.onProfileUpdated(); // notify parent
+                              Navigator.pop(context); // close bottom sheet
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'Profile updated successfully!',
+                                  ),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Failed to update profile.'),
+                                ),
+                              );
+                            }
+                          }
+                        },
+                        child: const Text(
+                          'Save',
+                          style: TextStyle(fontSize: 18, color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
@@ -248,11 +222,47 @@ class _AccountDetailsState extends State<AccountDetails> {
     );
   }
 
+  Widget _buildTextField(String label, TextEditingController controller) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.inter(
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+            color: const Color(0xff6C7275),
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: controller,
+
+          decoration: InputDecoration(
+            labelText: lowercaseExceptFirst(label),
+            border: OutlineInputBorder(),
+            isDense: true,
+            contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+          ),
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return '$label is required';
+            }
+            return null;
+          },
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (widget.isLoading || widget.currentUser == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
-
       child: Form(
         key: _passwordFormKey,
         child: Column(
@@ -263,108 +273,13 @@ class _AccountDetailsState extends State<AccountDetails> {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 25),
-            Text(
-              'EMAIL *',
-              style: GoogleFonts.inter(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-                height: 1.0,
-                letterSpacing: 0,
-                color: Color(0xff6C7275),
-              ),
-            ),
-            const SizedBox(height: 8),
-            TextFormField(
-              readOnly: true,
-              controller: _email,
-              decoration: InputDecoration(
-                labelText: 'Email',
-                border: OutlineInputBorder(),
-                isDense: true,
-                contentPadding: EdgeInsets.symmetric(
-                  vertical: 12,
-                  horizontal: 12,
-                ),
-              ),
-            ),
+            _buildReadOnlyField('EMAIL *', _email),
             const SizedBox(height: 25),
-            Text(
-              'FIRST NAME *',
-              style: GoogleFonts.inter(
-                //   fontFamily: 'Inter',
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-                height: 1.0,
-                letterSpacing: 0,
-                color: Color(0xff6C7275),
-              ),
-            ),
-            const SizedBox(height: 8),
-
-            TextFormField(
-              controller: _firstName,
-              readOnly: true,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                isDense: true,
-                contentPadding: EdgeInsets.symmetric(
-                  vertical: 12,
-                  horizontal: 12,
-                ),
-              ),
-            ),
-
+            _buildReadOnlyField('FIRST NAME *', _firstName),
             const SizedBox(height: 25),
-            Text(
-              'LAST NAME *',
-              style: GoogleFonts.inter(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-                height: 1.0,
-                letterSpacing: 0,
-                color: Color(0xff6C7275),
-              ),
-            ),
-            const SizedBox(height: 8),
-
-            TextFormField(
-              readOnly: true,
-              controller: _lastName,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                isDense: true,
-                contentPadding: EdgeInsets.symmetric(
-                  vertical: 12,
-                  horizontal: 12,
-                ),
-              ),
-            ),
-
+            _buildReadOnlyField('LAST NAME *', _lastName),
             const SizedBox(height: 25),
-            Text(
-              'DISPLAY NAME *',
-              style: GoogleFonts.inter(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-                height: 1.0,
-                letterSpacing: 0,
-                color: Color(0xff6C7275),
-              ),
-            ),
-            const SizedBox(height: 8),
-            TextFormField(
-              readOnly: true,
-              controller: _displayName,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                isDense: true,
-                contentPadding: EdgeInsets.symmetric(
-                  vertical: 12,
-                  horizontal: 12,
-                ),
-              ),
-            ),
-
+            _buildReadOnlyField('DISPLAY NAME *', _displayName),
             const SizedBox(height: 10),
             const Text(
               'This will be how your name will be displayed in the account section and in reviews',
@@ -380,123 +295,30 @@ class _AccountDetailsState extends State<AccountDetails> {
                 height: 52,
                 child: ElevatedButton(
                   onPressed: _openEditProfileSheet,
-
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.black,
-
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   child: const Text(
                     'Edit Profile',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Color.fromARGB(255, 253, 252, 252),
-                    ),
+                    style: TextStyle(fontSize: 18, color: Colors.white),
                   ),
                 ),
               ),
             ),
-
             const SizedBox(height: 40),
             const Text(
               'Password',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 25),
-            Text(
-              'OLD PASSWORD',
-              style: GoogleFonts.inter(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-                height: 1.0,
-                letterSpacing: 0,
-                color: Color(0xff6C7275),
-              ),
-            ),
-            const SizedBox(height: 8),
-            TextFormField(
-              controller: _oldPassword,
-              decoration: InputDecoration(
-                labelText: 'Old Password',
-                border: OutlineInputBorder(),
-                isDense: true,
-                contentPadding: EdgeInsets.symmetric(
-                  vertical: 12,
-                  horizontal: 12,
-                ),
-              ),
-              validator: (value) {
-                if (value == null || value.trim() == '') {
-                  return 'Old password is required';
-                }
-                return null;
-              },
-            ),
-
+            _buildPasswordField('OLD PASSWORD', _oldPassword),
             const SizedBox(height: 25),
-            Text(
-              'NEW PASSWORD',
-              style: GoogleFonts.inter(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-                height: 1.0,
-                letterSpacing: 0,
-                color: Color(0xff6C7275),
-              ),
-            ),
-            const SizedBox(height: 8),
-            TextFormField(
-              controller: _newPassword,
-              decoration: InputDecoration(
-                labelText: 'New Password',
-                border: OutlineInputBorder(),
-                isDense: true,
-                contentPadding: EdgeInsets.symmetric(
-                  vertical: 12,
-                  horizontal: 12,
-                ),
-              ),
-              validator: (value) {
-                if (value == null || value.trim() == '') {
-                  return 'New password is required';
-                }
-                return null;
-              },
-            ),
-
+            _buildPasswordField('NEW PASSWORD', _newPassword),
             const SizedBox(height: 25),
-            Text(
-              'REPEAT NEW PASSWORD',
-              style: GoogleFonts.inter(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-                height: 1.0,
-                letterSpacing: 0,
-                color: Color(0xff6C7275),
-              ),
-            ),
-            const SizedBox(height: 8),
-            TextFormField(
-              controller: _confirmPassword,
-              decoration: InputDecoration(
-                labelText: 'Repeat new password',
-                border: OutlineInputBorder(),
-                isDense: true,
-                contentPadding: EdgeInsets.symmetric(
-                  vertical: 12,
-                  horizontal: 12,
-                ),
-              ),
-              validator: (value) {
-                if (value == null || value.trim() == '') {
-                  return 'Repeat new password is required';
-                }
-                return null;
-              },
-            ),
-
+            _buildPasswordField('REPEAT NEW PASSWORD', _confirmPassword),
             const SizedBox(height: 25),
             Center(
               child: SizedBox(
@@ -504,20 +326,15 @@ class _AccountDetailsState extends State<AccountDetails> {
                 height: 52,
                 child: ElevatedButton(
                   onPressed: _updateProfile,
-
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.black,
-
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   child: const Text(
                     'Save changes',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Color.fromARGB(255, 253, 252, 252),
-                    ),
+                    style: TextStyle(fontSize: 18, color: Colors.white),
                   ),
                 ),
               ),
@@ -526,6 +343,68 @@ class _AccountDetailsState extends State<AccountDetails> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildReadOnlyField(String label, TextEditingController controller) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.inter(
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+            color: const Color(0xff6C7275),
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: controller,
+          readOnly: true,
+          decoration: const InputDecoration(
+            border: OutlineInputBorder(),
+            isDense: true,
+            contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPasswordField(String label, TextEditingController controller) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.inter(
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+            color: const Color(0xff6C7275),
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: controller,
+          obscureText: true,
+          decoration: InputDecoration(
+            labelText: lowercaseExceptFirst(label),
+            border: const OutlineInputBorder(),
+            isDense: true,
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 12,
+              horizontal: 12,
+            ),
+          ),
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return '$label is required';
+            }
+            return null;
+          },
+        ),
+      ],
     );
   }
 }

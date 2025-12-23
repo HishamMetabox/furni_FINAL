@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:furni_mobile_app/Header/header.dart';
+import 'package:furni_mobile_app/models/user_model.dart';
+import 'package:furni_mobile_app/services/update_profilepicture.dart';
 import 'package:furni_mobile_app/widgets/account%20details.dart';
 import 'package:furni_mobile_app/widgets/address_details.dart';
 import 'package:furni_mobile_app/widgets/footer/profile_picture.dart';
 import 'package:furni_mobile_app/widgets/user_profile.dart';
+import 'package:furni_mobile_app/services/auth_service.dart';
 
 class MyAccount extends StatefulWidget {
   const MyAccount({super.key});
@@ -14,6 +17,24 @@ class MyAccount extends StatefulWidget {
 
 class _MyAccountState extends State<MyAccount> {
   String _selectedValue = 'Account';
+  AppUser? currentUser;
+  bool isLoading = true;
+
+  final AuthService authService = AuthService();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUser();
+  }
+
+  Future<void> _loadUser() async {
+    final user = await authService.fetchMe();
+    setState(() {
+      currentUser = user;
+      isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +44,6 @@ class _MyAccountState extends State<MyAccount> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Header(),
               Row(
                 children: [
                   TextButton.icon(
@@ -64,27 +84,47 @@ class _MyAccountState extends State<MyAccount> {
 
                   Column(
                     children: [
-                      // Center(
-                      //   child: Padding(
-                      //     padding: const EdgeInsets.only(top: 15),
-                      //     child: ProfilePicture(
-                      //       imagePath: UserProfile.profileImagePath,
-                      //       onImageSelected: (path) {
-                      //         setState(() {
-                      //           UserProfile.profileImagePath = path;
-                      //         });
-                      //       },
-                      //     ),
-                      //   ),
-                      // ),
-                      const SizedBox(height: 15),
-                      Text(
-                        UserProfile.displayName,
-                        style: TextStyle(
-                          fontSize: 23,
-                          fontWeight: FontWeight.bold,
+                      Center(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 15),
+                          child: ProfilePicture(
+                            imagePath: UserProfile.profileImagePath,
+                            imageUrl: currentUser?.profilePictureUrl,
+                            onImageSelected: (path) async {
+                              setState(() {
+                                UserProfile.profileImagePath = path;
+                              });
+
+                              final success = await UserProfileService()
+                                  .updateProfilePicture(path);
+
+                              if (success) {
+                                await _loadUser(); // 🔁 refresh from backend
+                              }
+                            },
+                          ),
                         ),
                       ),
+                      const SizedBox(height: 15),
+
+                      //display user details
+                      if (isLoading)
+                        const CircularProgressIndicator()
+                      else if (currentUser != null)
+                        Column(
+                          children: [
+                            Text(
+                              currentUser!.displayName,
+                              style: const TextStyle(
+                                fontSize: 23,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        )
+                      else
+                        const Text('Failed to load user'),
+
                       const SizedBox(height: 40),
                       Container(
                         height: 48,
@@ -125,11 +165,16 @@ class _MyAccountState extends State<MyAccount> {
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 child: _selectedValue == 'Account'
                     ? AccountDetails(
+                        currentUser: currentUser,
+                        isLoading: isLoading,
                         onProfileUpdated: () {
                           setState(() {});
                         },
                       )
-                    : const AddressDetails(),
+                    : AddressDetails(
+                        currentUser: currentUser,
+                        isLoading: isLoading,
+                      ),
               ),
             ],
           ),

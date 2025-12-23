@@ -1,46 +1,52 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileService {
   final String baseUrl = "http://159.65.15.249:1337";
 
-  Future<bool> updateProfile({
+  // ✅ THIS LINE IS REQUIRED
+  final Dio dio = Dio();
+
+  Future<bool> createUserProfile({
     required String firstName,
     required String lastName,
     required String displayName,
+    String? imagePath,
   }) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final jwt = prefs.getString('jwt');
       final userId = prefs.getInt('userId');
 
-      if (jwt == null || userId == null) {
-        print('❌ Missing JWT or User ID');
-        return false;
+      dio.options.headers = {'Authorization': 'Bearer $jwt'};
+
+      int? imageId;
+
+      if (imagePath != null) {
+        final formData = FormData.fromMap({
+          'files': await MultipartFile.fromFile(imagePath),
+        });
+
+        final uploadRes = await dio.post('$baseUrl/api/upload', data: formData);
+
+        imageId = uploadRes.data[0]['id'];
       }
 
-      final url = Uri.parse('$baseUrl/api/users/$userId');
+      final Map<String, dynamic> data = {
+        'firstName': firstName,
+        'lastName': lastName,
+        'displayName': displayName,
+      };
 
-      final response = await http.put(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $jwt',
-        },
-        body: jsonEncode({
-          'firstName': firstName,
-          'lastName': lastName,
-          'displayName': displayName,
-        }),
-      );
+      if (imageId != null) {
+        data['profilePicture'] = imageId;
+      }
 
-      print('STATUS: ${response.statusCode}');
-      print('BODY: ${response.body}');
+      final res = await dio.put('$baseUrl/api/users/$userId', data: data);
 
-      return response.statusCode == 200;
+      return res.statusCode == 200;
     } catch (e) {
-      print('❌ ERROR: $e');
+      print('CREATE PROFILE ERROR: $e');
       return false;
     }
   }
