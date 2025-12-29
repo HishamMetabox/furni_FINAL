@@ -18,14 +18,12 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-    print('🏠 HomeScreen building...');
 
     return Scaffold(
       appBar: AppBar(title: const Header(), automaticallyImplyLeading: false),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
-            // Removed 'const' from children list because Services/Carousel are dynamic
             children: [
              const SizedBox(
               height: 300, 
@@ -35,7 +33,6 @@ class _HomeScreenState extends State<HomeScreen> {
               const NewArrival(),
               const SizedBox(height: 10),
               
-              // FIXED: Removed the Row. Services() handles its own internal grid.
               Container(
                 padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
                 child: const Services()), 
