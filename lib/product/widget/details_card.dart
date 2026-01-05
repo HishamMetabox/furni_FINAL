@@ -3,11 +3,15 @@ import 'package:furni_mobile_app/Items/counter.dart';
 import 'package:furni_mobile_app/product/widget/rating_star.dart';
 import 'package:furni_mobile_app/product/widget/select_color.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:furni_mobile_app/product/data/orders.dart';
+import 'package:furni_mobile_app/services/auth_service.dart';
 
 class DetailsCard extends StatefulWidget {
   const DetailsCard({
     super.key,
 
+    required this.productId,
+    required this.image,
     required this.name,
     required this.category,
     required this.colours,
@@ -16,8 +20,12 @@ class DetailsCard extends StatefulWidget {
     required this.price,
     required this.rating,
     required this.quantity,
+    this.initialColor,
+    required this.onQuantityChanged,
   });
 
+  final int productId;
+  final String image;
   final String name;
   final String category;
   final String description;
@@ -26,136 +34,92 @@ class DetailsCard extends StatefulWidget {
   final List<String> colours;
   final int quantity;
   final int rating;
-
+  final String? initialColor;
+  final void Function(Map<int, int>) onQuantityChanged;
   @override
   State<DetailsCard> createState() => _DetailsCardState();
 }
 
 class _DetailsCardState extends State<DetailsCard> {
   @override
+   late int selectedqty;
+  late String colorselected;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedqty = widget.quantity;
+    colorselected =
+        widget.initialColor ?? (widget.colours.isNotEmpty ? widget.colours[0] : "Default");
+  }
+
+  void handleAddToCart(BuildContext context) async {
+    final authService = AuthService();
+    final user = await authService.fetchMe();
+    if (user == null) return;
+
+    final existingIndex = ordersList.indexWhere(
+      (item) => item.product_id == widget.productId && item.userId == user.id,
+    );
+
+    setState(() {
+      if (existingIndex != -1) {
+        ordersList[existingIndex].quantity = selectedqty;
+        ordersList[existingIndex].colorr = [colorselected];
+      } else {
+        ordersList.add(
+          MyOrders(
+            product_id: widget.productId,
+            image: widget.image,
+            quantity: selectedqty,
+            description: widget.description,
+            price: widget.price,
+            colorr: [colorselected],
+            name: widget.name,
+            userId: user.id,
+            measurement: widget.measurements,
+          ),
+        );
+      }
+    });
+
+    widget.onQuantityChanged({widget.productId: selectedqty});
+  }
   Widget build(BuildContext context) {
-    double w = MediaQuery.of(context).size.width;
-    // track selected quantity elsewhere if needed; avoid unused local
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              RatingStar(initialRating: widget.rating),
-              SizedBox(width: 12),
-              Text(
-                '11 Reviews',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontFamily: GoogleFonts.inter().fontFamily,
-                ),
-                textAlign: TextAlign.justify,
-              ),
-            ],
-          ),
-          SizedBox(height: 5),
-          Text(
-            widget.name,
-            style: TextStyle(
-              fontSize: 40,
-              fontWeight: FontWeight.w500,
-              letterSpacing: -0.4,
-              fontFamily: GoogleFonts.poppins().fontFamily,
+     final w = MediaQuery.of(context).size.width;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        RatingStar(initialRating: widget.rating),
+        Text(widget.name, style: GoogleFonts.poppins(fontSize: 32)),
+        Text(widget.description),
+        Text('Rs ${widget.price}'),
+
+        SelectColor(
+          colorsNames: widget.colours,
+          initialColor: colorselected,
+          onColorChanged: (value) => setState(() => colorselected = value),
+        ),
+
+        Row(
+          children: [
+            QuantityCounter(
+              initialQuantity: selectedqty,
+              onQuantityChanged: (v) => setState(() => selectedqty = v),
             ),
-            textAlign: TextAlign.start,
-          ),
-          SizedBox(height: 5),
-          Text(
-            widget.description,
-            style: TextStyle(
-              fontSize: 16,
-              color: const Color.fromARGB(255, 108, 109, 117),
-              letterSpacing: 0,
-              fontFamily: GoogleFonts.inter().fontFamily,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-          SizedBox(height: 16),
-          Text(
-            'Rs ${widget.price}',
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.w500,
-              fontFamily: GoogleFonts.poppins().fontFamily,
-              letterSpacing: -0.6,
-            ),
-          ),
-          Divider(
-            color: const Color.fromARGB(255, 108, 109, 117),
-            thickness: 0.2,
-          ),
-          Text(
-            'Measurements',
-            style: TextStyle(
-              fontSize: 16,
-              color: const Color.fromARGB(255, 108, 109, 117),
-              letterSpacing: 0.5,
-              fontWeight: FontWeight.w600,
-              fontFamily: GoogleFonts.inter().fontFamily,
-            ),
-          ),
-          SizedBox(height: 5),
-          Text(
-            widget.measurements,
-            style: TextStyle(
-              fontSize: 20,
-              fontFamily: GoogleFonts.inter().fontFamily,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-          SizedBox(height: 24),
-          Row(
-            children: [
-              Text(
-                'Choose Color ',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: const Color.fromARGB(255, 108, 109, 117),
-                  letterSpacing: 0,
-                  fontWeight: FontWeight.w600,
-                  fontFamily: GoogleFonts.inter().fontFamily,
-                ),
+            const SizedBox(width: 8),
+            ElevatedButton(
+              onPressed: () => handleAddToCart(context),
+              style: ElevatedButton.styleFrom(
+                fixedSize: Size(w * 0.55, 45),
+                backgroundColor: Colors.black,
               ),
-              Icon(
-                Icons.arrow_forward_ios,
-                size: 12,
-                color: const Color.fromARGB(255, 108, 109, 117),
-              ),
-            ],
-          ),
-          SizedBox(height: 5),
-          SelectColor(colorsNames: widget.colours),
-          SizedBox(height: 20),
-          Row(
-            children: [
-              QuantityCounter(
-                onQuantityChanged: (value) {
-                  setState(() {});
-                },
-              ),
-              const SizedBox(width: 8),
-              ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  fixedSize: Size(w * 0.55, 45),
-                  backgroundColor: Colors.black,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                ),
-                child: const Text('Add to cart'),
-              ),
-            ],
-          ),
-        ],
-      ),
+              child: const Text('Add to cart'),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

@@ -53,7 +53,7 @@ class Contactus extends StatelessWidget {
       appBar: AppBar(automaticallyImplyLeading: false, title: Header()),
 
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(32, 0, 32, 0),
+        padding: const EdgeInsets.fromLTRB(16,0,16,0),
         child: Column(
           children: [
             Row(

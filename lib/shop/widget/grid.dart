@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-// import 'package:furni_mobile_app/home_page/toggle_favorite.dart';
-import 'package:furni_mobile_app/product/Product_page.dart';
+import 'package:furni_mobile_app/product/Product_page.dart'; 
 import 'package:furni_mobile_app/product/data/dummyData.dart';
 import 'package:furni_mobile_app/product/widget/rating_star.dart';
 
@@ -13,18 +12,17 @@ class ProductGrid extends StatefulWidget {
 }
 
 class _ProductGridState extends State<ProductGrid> {
-  int qty = 1;
-
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
       padding: const EdgeInsets.all(16),
-
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        crossAxisSpacing: 6,
-        mainAxisSpacing: 10,
-        childAspectRatio: 0.58,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 15,
+        childAspectRatio: 0.55,
       ),
       itemCount: widget.items.length,
       itemBuilder: (context, index) {
@@ -33,79 +31,84 @@ class _ProductGridState extends State<ProductGrid> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            InkWell(
-              borderRadius: BorderRadius.circular(16),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => ProductPage(
-                      product_id: item.id,
-                      onQuantityChanged: (int value) {
-                        setState(() {
-                          qty = value;
-                        });
-                      },
-                    ),
-                  ),
-                );
-              },
-              child: Container(
-                height: 200,
-                margin: const EdgeInsets.symmetric(horizontal: 8),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  image: DecorationImage(
-                    image: NetworkImage(item.display_image),
-                    fit: BoxFit.cover,
-                    onError: (exception, stackTrace) =>
-                        const Icon(Icons.broken_image),
-                  ),
-                ),
-                child: Stack(
-                  children: [
-                    Positioned(
-                      bottom: 10,
-                      left: 10,
-                      right: 10,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color.fromARGB(
-                            255,
-                            6,
-                            53,
-                            107,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        onPressed: () {},
-                        child: const Text(
-                          'Add to Cart',
-                          style: TextStyle(color: Colors.white),
-                        ),
+            Expanded(
+              child: InkWell(
+                borderRadius: BorderRadius.circular(16),
+                onTap: () {
+                  // Navigates to ProductPage using the ID and required callback
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProductPage(
+                        product_id: item.id, 
+                        onQuantityChanged: (qty) => debugPrint("Qty: $qty"),
                       ),
                     ),
-                  ],
+                  );
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    image: DecorationImage(
+                      image: NetworkImage(item.display_image),
+                      fit: BoxFit.cover,
+                      onError: (e, s) => const Icon(Icons.broken_image, size: 40),
+                    ),
+                  ),
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        bottom: 8,
+                        left: 8,
+                        right: 8,
+                        child: SizedBox(
+                          height: 35,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color.fromARGB(255, 6, 53, 107),
+                              padding: EdgeInsets.zero,
+                              elevation: 2,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            onPressed: () {
+                              // Cart logic: Add item.id to your cart provider/state
+                              debugPrint("Added ${item.name} to cart");
+                            },
+                            child: const Text(
+                              'Add to Cart',
+                              style: TextStyle(
+                                color: Colors.white, 
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-
+            // Text Details Section
             Padding(
-              padding: const EdgeInsets.only(left: 16, top: 6),
+              padding: const EdgeInsets.only(left: 8, top: 10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   RatingStar(initialRating: item.rating),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 6),
                   Text(
                     item.name,
+                    maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
+                      color: Colors.black87,
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -113,7 +116,8 @@ class _ProductGridState extends State<ProductGrid> {
                     'Rs ${item.price.toStringAsFixed(2)}',
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                      fontSize: 15,
+                      color: Colors.black,
                     ),
                   ),
                 ],
@@ -124,6 +128,4 @@ class _ProductGridState extends State<ProductGrid> {
       },
     );
   }
-
-  // badge helper removed (unused)
 }

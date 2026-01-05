@@ -7,8 +7,13 @@ import 'package:furni_mobile_app/shop/widget/productFilter.dart';
 
 class Filternav extends StatelessWidget {
   final Function(ProductFilter) onFilterApplied;
+  final Function(String) onSortApplied;
 
-  const Filternav({super.key, required this.onFilterApplied});
+  const Filternav({
+    super.key, 
+    required this.onFilterApplied, 
+    required this.onSortApplied
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -20,10 +25,10 @@ class Filternav extends StatelessWidget {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
-            spreadRadius: 2,
-            blurRadius: 2,
-            offset: const Offset(0, 3),
+            color: Colors.grey.withOpacity(0.2),
+            spreadRadius: 1,
+            blurRadius: 5,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -35,54 +40,35 @@ class Filternav extends StatelessWidget {
                 context: context,
                 isScrollControlled: true,
                 shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(24))
                 ),
                 builder: (ctx) => const FilterBottomSheet(),
               );
-
-              if (result != null) {
-                onFilterApplied(result);
-              }
+              if (result != null) onFilterApplied(result);
             },
             child: Row(
               children: [
-                SvgPicture.asset('assets/images/filter.svg', width: 24),
-                const SizedBox(width: 4),
-                Text(
-                  'Filter',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    fontFamily: GoogleFonts.inter().fontFamily,
-                    color: Colors.black,
-                  ),
-                ),
+                SvgPicture.asset('assets/images/filter.svg', width: 20),
+                const SizedBox(width: 8),
+                Text('Filter', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black)),
               ],
             ),
           ),
-
           const Spacer(),
-
           TextButton(
-            onPressed: () {
-              showBottomSheet(context: context, 
+            onPressed: () async {
+              final String? result = await showModalBottomSheet<String>(
+                context: context,
                 shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(24))
                 ),
-              builder: (ctx) => const Sortby(),);
+                builder: (ctx) => const Sortby(),
+              );
+              if (result != null) onSortApplied(result);
             },
             child: Row(
               children: [
-                Text(
-                  'Sort by',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    fontFamily: GoogleFonts.inter().fontFamily,
-                    color: Colors.black,
-                  ),
-                ),
-                const SizedBox(width: 4),
+                Text('Sort by', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black)),
                 const Icon(Icons.arrow_drop_down, color: Colors.black),
               ],
             ),
@@ -92,4 +78,3 @@ class Filternav extends StatelessWidget {
     );
   }
 }
-

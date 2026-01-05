@@ -9,127 +9,52 @@ class Sortby extends StatefulWidget {
 }
 
 class _SortbyState extends State<Sortby> {
-  String sortby = 'A';
+  String _selectedOption = ''; 
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(15),
-      height: 350, 
-      width: double.infinity,
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+      height: 380,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 10),
+            child: Row(
               children: [
-                IconButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: Icon(
-                    Icons.arrow_back_ios_new,
-                    color: Colors.black,
-                    size: 15,
-                  ),
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: const Icon(Icons.arrow_back_ios_new, size: 18)
                 ),
-                Text(
-                  'Sort by',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    fontFamily: GoogleFonts.inter().fontFamily,
-                    color: Colors.black,
-                  ),
-                ),
+                const SizedBox(width: 15),
+                Text('Sort by', style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w700)),
               ],
             ),
-        SizedBox(height: 30),
-         RadioListTile(
-                activeColor: Colors.black,
-                title: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Recommended',
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-
-              value: 'A',
-              groupValue: sortby,
-              onChanged: (value) => setState(() {
-                sortby = value!;
-              }),
-              visualDensity: const VisualDensity(horizontal: -4.0),
-            ),
-            RadioListTile(
-              activeColor: Colors.black,
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Recently Added',
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-
-              value: 'B',
-              groupValue: sortby,
-              onChanged: (value) => setState(() {
-                sortby = value!;
-              }),
-              visualDensity: const VisualDensity(horizontal: -4.0),
-            ),
-            RadioListTile(
-              activeColor: Colors.black,
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Price: Low to High',
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-
-              value: 'C',
-              groupValue: sortby,
-              onChanged: (value) => setState(() {
-                sortby = value!;
-              }),
-              visualDensity: const VisualDensity(horizontal: -4.0),
-            ),
-            RadioListTile(
-              activeColor: Colors.black,
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Price: High to Low',style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600)),  
-                  ],
-                ),
-                
-                value: 'D', 
-                groupValue: sortby,
-                onChanged: (value) => setState(() {
-                  sortby = value!;
-                }),
-                 visualDensity: const VisualDensity(horizontal: -4.0),
-                ),
-           
-          ],
-        ),
+          ),
+          const SizedBox(height: 20),
+          _option('Recommended', 'A'),
+          _option('Recently Added', 'B'),
+          _option('Price: Low to High', 'C'),
+          _option('Price: High to Low', 'D'),
+        ],
       ),
+    );
+  }
+
+  Widget _option(String title, String val) {
+    return RadioListTile<String>(
+      title: Text(title, style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w500)),
+      value: val,
+      groupValue: _selectedOption,
+      activeColor: Colors.black,
+      onChanged: (String? value) {
+        setState(() => _selectedOption = value!);
+        // This is the key: it closes the sheet and returns the value 'A', 'B', etc.
+        Future.delayed(const Duration(milliseconds: 200), () {
+          Navigator.pop(context, value);
+        });
+      },
     );
   }
 }

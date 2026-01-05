@@ -73,7 +73,7 @@ class _ProductPageState extends State<ProductPage> {
                 SizedBox(
                   height: 414,
                   width: double.infinity,
-                  child: DisplayImages(displayImages:product.images,),
+                  child: DisplayImages(display_image: product.images,),
                 ),
                 const SizedBox(height: 16),
 
