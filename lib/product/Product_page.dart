@@ -1,23 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:furni_mobile_app/Header/header.dart';
 import 'package:furni_mobile_app/navbar/navbar.dart';
+import 'package:furni_mobile_app/product/data/dummyData.dart';
 import 'package:furni_mobile_app/product/widget/Add_review.dart';
 import 'package:furni_mobile_app/product/widget/details_card.dart';
 import 'package:furni_mobile_app/product/widget/display_images.dart';
 import 'package:furni_mobile_app/product/widget/navigation.dart';
 import 'package:furni_mobile_app/product/widget/review.dart';
 import 'package:furni_mobile_app/services/api_dummydata.dart';
-import 'package:furni_mobile_app/product/data/dummyData.dart';
 
-class ProductPage extends StatelessWidget {
+class ProductPage extends StatefulWidget {
   const ProductPage({
     super.key,
     required this.onQuantityChanged,
     required this.product_id,
+    this.initialQuantity = 1,
+    this.initialColor,
   });
 
   final void Function(int) onQuantityChanged;
   final int product_id;
+  final int initialQuantity;
+  final String? initialColor;
+
+  @override
+  State<ProductPage> createState() => _ProductPageState();
+}
+
+class _ProductPageState extends State<ProductPage> {
+  void _refreshReviews() {
+    setState(() {}); // triggers rebuild, which refetches Review's FutureBuilder
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,48 +43,41 @@ class ProductPage extends StatelessWidget {
           );
         }
 
-        if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Scaffold(body: Center(child: Text('No product found')));
+        if (snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty) {
+          return Scaffold(
+            body: Center(child: Text("Error: ${snapshot.error ?? 'No data found'}")),
+          );
         }
 
-        final product = snapshot.data!.firstWhere(
-          (p) => p.id == product_id,
-          orElse: () => snapshot.data!.first,
+        // Find the specific product
+        final productList = snapshot.data!;
+        final product = productList.firstWhere(
+          (p) => p.id == widget.product_id,
+          orElse: () => productList.first,
         );
 
         return Scaffold(
           appBar: AppBar(
-            automaticallyImplyLeading: false,
-            title: Header(
-              onProductTap: (productId) {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => ProductPage(
-                      product_id: productId,
-                      onQuantityChanged: onQuantityChanged,
-                    ),
-                  ),
-                );
-              },
-            ),
+            automaticallyImplyLeading: true,
+            title: const Header(),
           ),
-
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(20),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Navigation(),
                 const SizedBox(height: 16),
 
+                // Product Images
                 SizedBox(
                   height: 414,
-                  width: 311,
-                  child: DisplayImages(display_image: product.images),
+                  width: double.infinity,
+                  child: DisplayImages(displayImages:product.images,),
                 ),
-
                 const SizedBox(height: 16),
 
+                // Details Card
                 DetailsCard(
                   name: product.name,
                   category: product.category,
@@ -80,22 +86,30 @@ class ProductPage extends StatelessWidget {
                   measurements: product.measurements,
                   price: product.price,
                   rating: product.rating,
-                  quantity: product.quantity,
+                  quantity: widget.initialQuantity,
+                  initialColor: widget.initialColor,
+                  image: product.display_image,
+                  productId: widget.product_id,
+                  onQuantityChanged: (qtyMap) {
+                    widget.onQuantityChanged(qtyMap[widget.product_id] ?? 1);
+                  },
                 ),
-
                 const SizedBox(height: 20),
                 const Divider(thickness: 1.5),
                 const SizedBox(height: 15),
 
-                /// ✅ Pass product ID correctly
-                AddReview(productId: product_id.toString()),
-
+                // Add Review
+                AddReview(
+                  productId: widget.product_id.toString(),
+                  onReviewPosted: _refreshReviews,
+                ),
                 const SizedBox(height: 20),
-                const Review(),
+
+                // Reviews List
+                Review(productId: widget.product_id.toString()),
               ],
             ),
           ),
-
           bottomNavigationBar: const SizedBox(
             height: 90,
             child: GlassFloatingNavBar(),
