@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:furni_mobile_app/product/widget/rating_star.dart';
 import 'package:furni_mobile_app/product/data/reviewdata.dart';
+import 'package:furni_mobile_app/product/widget/review.dart';
 import 'package:furni_mobile_app/services/profile_service.dart';
 
 import 'package:furni_mobile_app/models/user_model.dart';
@@ -13,69 +14,73 @@ import 'package:furni_mobile_app/services/auth_service.dart';
 import 'package:furni_mobile_app/services/api_review.dart';
 
 class AddReview extends StatefulWidget {
-  const AddReview({super.key, required this.productId});
-  final String productId;
-
+ AddReview({super.key, required this.productId, this.onReviewPosted});
+ final String productId;
+final VoidCallback? onReviewPosted;
   @override
   State<AddReview> createState() => _AddReviewState();
 }
 
 class _AddReviewState extends State<AddReview> {
+      String _selectedValue = 'Account';
+  AppUser? currentUser;
+  bool isLoading = true;
+  final AuthService authService = AuthService();
+  Future<void> _loadUser() async {
+    final user = await authService.fetchMe();
+    setState(() {
+      currentUser = user;
+      isLoading = false;
+    });
+  }
+   @override
+  void initState() {
+    super.initState();
+    _loadUser();
+  }
+  int selectedRating =0;
+   final TextEditingController comment = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    String selectedValue = 'Account';
-    AppUser? currentUser;
-    bool isLoading = true;
 
-    final AuthService authService = AuthService();
-    Future<void> loadUser() async {
-      final user = await authService.fetchMe();
-      setState(() {
-        currentUser = user;
-        isLoading = false;
-      });
-    }
+    
+ 
+void _handlePost() async {
+  if (comment.text.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Please enter a comment")),
+    );
+    return;
+  }
 
-    @override
-    void initState() {
-      super.initState();
-      loadUser();
-    }
+  if (currentUser == null) return;
 
-    final TextEditingController comment = TextEditingController();
-    int selectedRating = 0;
-    void handlePost() async {
-      if (comment.text.isEmpty) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text("Please enter a comment")));
-        return;
-      }
+  try {
+    await ReviewService().postReview(
+      name: currentUser!.displayName, 
+      comment: comment.text,
+      rating: selectedRating,
+      productId: int.parse(widget.productId),
+    );
+    if (widget.onReviewPosted != null) {
+  widget.onReviewPosted!();
+}
 
-      // Assuming currentUser is loaded from your _loadUser()
-      if (currentUser == null) return;
-
-      try {
-        await ReviewService().postReview(
-          name: currentUser!.displayName,
-          comment: comment.text,
-          rating: selectedRating,
-          productIds: [widget.productId],
-        );
-
-        comment.clear();
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text("Review submitted!")));
-
-        // Optional: Refresh the list or go back
-      } catch (e) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text("Error submitting review: $e")));
-      }
-    }
-
+    comment.clear();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Review submitted!")),
+    );
+    
+    // Optional: Refresh the list or go back
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Error submitting review: $e")),
+    );
+  }
+  
+}
+     
+  
     return Container(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -88,16 +93,16 @@ class _AddReviewState extends State<AddReview> {
           Container(
             child: Row(
               children: [
-                RatingStar(
-                  onRatingSelected: (value) {
-                    setState(() {
-                      value = selectedRating;
-                    });
-                  },
-                ),
-                SizedBox(width: 10),
-                Text('11 reviews'),
-              ],
+              RatingStar(
+ initialRating: selectedRating,
+  onRatingSelected: (value) {
+    setState(() {
+      selectedRating = value;
+    });
+  },
+),
+
+               SizedBox(width: 10), Text('11 reviews')],
             ),
           ),
           SizedBox(height: 10),
@@ -142,9 +147,7 @@ class _AddReviewState extends State<AddReview> {
                     right: 0,
                     top: -5,
                     child: IconButton(
-                      onPressed: () {
-                        handlePost();
-                      },
+                      onPressed: () {_handlePost();},
                       icon: Icon(
                         Icons.arrow_circle_right,
                         color: const Color.fromARGB(255, 37, 37, 37),
