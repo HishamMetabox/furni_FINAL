@@ -714,218 +714,218 @@ void _handleSubmit() async {
 
                 const SizedBox(height: 30),
 
-                // PAYMENT METHOD card
-                Container(
-                  height: 500,
+                // // PAYMENT METHOD card
+                // Container(
+                //   height: 500,
 
-                  decoration: BoxDecoration(
-                    border: Border.all(width: 1, color: Colors.black),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 30),
-                        Text(
-                          'Payment Method',
-                          style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 20,
-                          ),
-                        ),
-                        const SizedBox(height: 30),
+                //   decoration: BoxDecoration(
+                //     border: Border.all(width: 1, color: Colors.black),
+                //     borderRadius: BorderRadius.circular(10),
+                //   ),
+                //   child: Padding(
+                //     padding: const EdgeInsets.all(16.0),
+                //     child: Column(
+                //       crossAxisAlignment: CrossAxisAlignment.start,
+                //       children: [
+                //         const SizedBox(height: 30),
+                //         Text(
+                //           'Payment Method',
+                //           style: GoogleFonts.poppins(
+                //             fontWeight: FontWeight.w500,
+                //             fontSize: 20,
+                //           ),
+                //         ),
+                //         const SizedBox(height: 30),
 
-                        Container(
-                          height: 60,
-                          decoration: BoxDecoration(
-                            border: Border.all(width: 1, color: Colors.black),
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          child: RadioListTile<String>(
-                            activeColor: Colors.black,
-                            title: Text(
-                              'Pay by Card Credit',
-                              style: GoogleFonts.inter(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            value: 'Credit Card',
-                            groupValue: modePay,
-                            onChanged: (v) =>
-                                setState(() => modePay = v ?? modePay),
-                            visualDensity: const VisualDensity(
-                              horizontal: -4.0,
-                            ),
-                          ),
-                        ),
+                //         Container(
+                //           height: 60,
+                //           decoration: BoxDecoration(
+                //             border: Border.all(width: 1, color: Colors.black),
+                //             borderRadius: BorderRadius.circular(5),
+                //           ),
+                //           child: RadioListTile<String>(
+                //             activeColor: Colors.black,
+                //             title: Text(
+                //               'Pay by Card Credit',
+                //               style: GoogleFonts.inter(
+                //                 fontSize: 14,
+                //                 fontWeight: FontWeight.w600,
+                //               ),
+                //             ),
+                //             value: 'Credit Card',
+                //             groupValue: modePay,
+                //             onChanged: (v) =>
+                //                 setState(() => modePay = v ?? modePay),
+                //             visualDensity: const VisualDensity(
+                //               horizontal: -4.0,
+                //             ),
+                //           ),
+                //         ),
 
-                        const SizedBox(height: 20),
+                //         const SizedBox(height: 20),
 
-                        Container(
-                          height: 60,
-                          decoration: BoxDecoration(
-                            border: Border.all(width: 1, color: Colors.black),
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          child: RadioListTile<String>(
-                            activeColor: Colors.black,
-                            title: Text(
-                              'Paypal',
-                              style: GoogleFonts.inter(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            value: 'PayPal',
-                            groupValue: modePay,
-                            onChanged: (v) =>
-                                setState(() => modePay = v ?? modePay),
-                            visualDensity: const VisualDensity(
-                              horizontal: -4.0,
-                            ),
-                          ),
-                        ),
+                //         Container(
+                //           height: 60,
+                //           decoration: BoxDecoration(
+                //             border: Border.all(width: 1, color: Colors.black),
+                //             borderRadius: BorderRadius.circular(5),
+                //           ),
+                //           child: RadioListTile<String>(
+                //             activeColor: Colors.black,
+                //             title: Text(
+                //               'Paypal',
+                //               style: GoogleFonts.inter(
+                //                 fontSize: 14,
+                //                 fontWeight: FontWeight.w600,
+                //               ),
+                //             ),
+                //             value: 'PayPal',
+                //             groupValue: modePay,
+                //             onChanged: (v) =>
+                //                 setState(() => modePay = v ?? modePay),
+                //             visualDensity: const VisualDensity(
+                //               horizontal: -4.0,
+                //             ),
+                //           ),
+                //         ),
 
-                        const SizedBox(height: 20),
-                        const Divider(thickness: 1),
-                        const SizedBox(height: 20),
+                //         const SizedBox(height: 20),
+                //         const Divider(thickness: 1),
+                //         const SizedBox(height: 20),
 
-                        // Card fields
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'CARD NUMBER',
-                              style: GoogleFonts.inter(
-                                fontWeight: FontWeight.w700,
-                                fontSize: 12,
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            Container(
-                              height: 50,
+                //         // Card fields
+                //         Column(
+                //           crossAxisAlignment: CrossAxisAlignment.start,
+                //           children: [
+                //             Text(
+                //               'CARD NUMBER',
+                //               style: GoogleFonts.inter(
+                //                 fontWeight: FontWeight.w700,
+                //                 fontSize: 12,
+                //               ),
+                //             ),
+                //             const SizedBox(height: 10),
+                //             Container(
+                //               height: 50,
 
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                              ),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: Colors.grey),
-                                color: Colors.white,
-                              ),
-                              child: TextFormField(
-                                controller: cardNumber,
-                                validator: (v) =>
-                                    _nonEmptyValidator(v, 'Card Number'),
-                                decoration: InputDecoration(
-                                  hintText: '1234 1234 1234',
-                                  hintStyle: GoogleFonts.inter(
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 16,
-                                  ),
-                                  border: InputBorder.none,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                //               padding: const EdgeInsets.symmetric(
+                //                 horizontal: 12,
+                //               ),
+                //               decoration: BoxDecoration(
+                //                 borderRadius: BorderRadius.circular(8),
+                //                 border: Border.all(color: Colors.grey),
+                //                 color: Colors.white,
+                //               ),
+                //               child: TextFormField(
+                //                 controller: cardNumber,
+                //                 validator: (v) =>
+                //                     _nonEmptyValidator(v, 'Card Number'),
+                //                 decoration: InputDecoration(
+                //                   hintText: '1234 1234 1234',
+                //                   hintStyle: GoogleFonts.inter(
+                //                     fontWeight: FontWeight.w400,
+                //                     fontSize: 16,
+                //                   ),
+                //                   border: InputBorder.none,
+                //                 ),
+                //               ),
+                //             ),
+                //           ],
+                //         ),
 
-                        const SizedBox(height: 16),
+                //         const SizedBox(height: 16),
 
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'EXPIRATION DATE',
-                                    style: GoogleFonts.inter(
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  Container(
-                                    height: 50,
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(color: Colors.grey),
-                                      color: Colors.white,
-                                    ),
-                                    child: TextFormField(
-                                      controller: expirationDate,
-                                      validator: (v) => _nonEmptyValidator(
-                                        v,
-                                        'Expiration Date',
-                                      ),
-                                      decoration: InputDecoration(
-                                        hintText: 'MM/YY',
-                                        hintStyle: GoogleFonts.inter(
-                                          fontWeight: FontWeight.w400,
-                                          fontSize: 16,
-                                        ),
-                                        border: InputBorder.none,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'CVC',
-                                    style: GoogleFonts.inter(
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  Container(
-                                    height: 50,
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(color: Colors.grey),
-                                      color: Colors.white,
-                                    ),
-                                    child: TextFormField(
-                                      controller: cvc,
-                                      validator: (v) =>
-                                          _nonEmptyValidator(v, 'CVC Code'),
-                                      decoration: InputDecoration(
-                                        hintText: 'CVC code',
-                                        hintStyle: GoogleFonts.inter(
-                                          fontWeight: FontWeight.w400,
-                                          fontSize: 16,
-                                        ),
-                                        border: InputBorder.none,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                //         Row(
+                //           children: [
+                //             Expanded(
+                //               child: Column(
+                //                 crossAxisAlignment: CrossAxisAlignment.start,
+                //                 children: [
+                //                   Text(
+                //                     'EXPIRATION DATE',
+                //                     style: GoogleFonts.inter(
+                //                       fontWeight: FontWeight.w700,
+                //                       fontSize: 12,
+                //                     ),
+                //                   ),
+                //                   const SizedBox(height: 10),
+                //                   Container(
+                //                     height: 50,
+                //                     padding: const EdgeInsets.symmetric(
+                //                       horizontal: 12,
+                //                     ),
+                //                     decoration: BoxDecoration(
+                //                       borderRadius: BorderRadius.circular(8),
+                //                       border: Border.all(color: Colors.grey),
+                //                       color: Colors.white,
+                //                     ),
+                //                     child: TextFormField(
+                //                       controller: expirationDate,
+                //                       validator: (v) => _nonEmptyValidator(
+                //                         v,
+                //                         'Expiration Date',
+                //                       ),
+                //                       decoration: InputDecoration(
+                //                         hintText: 'MM/YY',
+                //                         hintStyle: GoogleFonts.inter(
+                //                           fontWeight: FontWeight.w400,
+                //                           fontSize: 16,
+                //                         ),
+                //                         border: InputBorder.none,
+                //                       ),
+                //                     ),
+                //                   ),
+                //                 ],
+                //               ),
+                //             ),
+                //             const SizedBox(width: 16),
+                //             Expanded(
+                //               child: Column(
+                //                 crossAxisAlignment: CrossAxisAlignment.start,
+                //                 children: [
+                //                   Text(
+                //                     'CVC',
+                //                     style: GoogleFonts.inter(
+                //                       fontWeight: FontWeight.w700,
+                //                       fontSize: 12,
+                //                     ),
+                //                   ),
+                //                   const SizedBox(height: 10),
+                //                   Container(
+                //                     height: 50,
+                //                     padding: const EdgeInsets.symmetric(
+                //                       horizontal: 12,
+                //                     ),
+                //                     decoration: BoxDecoration(
+                //                       borderRadius: BorderRadius.circular(8),
+                //                       border: Border.all(color: Colors.grey),
+                //                       color: Colors.white,
+                //                     ),
+                //                     child: TextFormField(
+                //                       controller: cvc,
+                //                       validator: (v) =>
+                //                           _nonEmptyValidator(v, 'CVC Code'),
+                //                       decoration: InputDecoration(
+                //                         hintText: 'CVC code',
+                //                         hintStyle: GoogleFonts.inter(
+                //                           fontWeight: FontWeight.w400,
+                //                           fontSize: 16,
+                //                         ),
+                //                         border: InputBorder.none,
+                //                       ),
+                //                     ),
+                //                   ),
+                //                 ],
+                //               ),
+                //             ),
+                //           ],
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+                // ),
 
-                const SizedBox(height: 30),
+                // const SizedBox(height: 30),
 
                 // Order summary block
                 Container(

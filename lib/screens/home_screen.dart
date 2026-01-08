@@ -48,46 +48,44 @@ class _HomeScreenState extends State<HomeScreen> {
         });
   }
 
-  // Placeholder for your actual data fetching (e.g., calling Strapi)
-  Future<void> _fetchLatestData() async {
-    // Add your API calls here if needed
-    debugPrint("Data refreshed from API");
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Header(), automaticallyImplyLeading: false),
-      body: SafeArea(
-        child: RefreshIndicator(
-          key: HomeScreen.refreshIndicatorKey,
-          onRefresh: _handleRefresh,
-          displacement: 60, // How far the spinner drops
-          child: SingleChildScrollView(
-            // ✅ THIS IS THE KEY: It allows the content to be pulled down
-            physics: const BouncingScrollPhysics(
-              parent: AlwaysScrollableScrollPhysics(),
-            ),
-            child: Column(
-              children: [
-                const SizedBox(height: 300, child: CarouselWidget()),
-                const Bundle(),
-                const NewArrival(),
-                const SizedBox(height: 10),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  child: const Services(),
+      body: Stack(
+        children: [
+          // Main scrollable content
+          SafeArea(
+            child: RefreshIndicator(
+              key: HomeScreen.refreshIndicatorKey,
+              onRefresh: _handleRefresh,
+              displacement: 60,
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics(),
                 ),
-                const SizedBox(height: 20),
-                const AboutUsSection(),
-              ],
+                child: Column(
+                  children: [
+                    const SizedBox(height: 300, child: CarouselWidget()),
+                    const Bundle(),
+                    const NewArrival(),
+                    const SizedBox(height: 10),
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      child: const Services(),
+                    ),
+                    const SizedBox(height: 20),
+                    const AboutUsSection(),
+                    const SizedBox(height: 100), // space for navbar
+                  ],
+                ),
+              ),
             ),
           ),
-        ),
-      ),
-      bottomNavigationBar: const SizedBox(
-        height: 100,
-        child: GlassFloatingNavBar(currentIndex: 0),
+
+          // Floating Glass Navbar
+          const GlassFloatingNavBar(currentIndex: 0),
+        ],
       ),
     );
   }

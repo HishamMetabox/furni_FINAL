@@ -1,23 +1,12 @@
 import 'package:flutter/material.dart';
-
 import 'package:furni_mobile_app/Header/header.dart';
-
-import 'package:furni_mobile_app/dummy%20items/myItems.dart';
-
 import 'package:furni_mobile_app/navbar/navbar.dart';
-
 import 'package:furni_mobile_app/product/data/dummyData.dart';
-
 import 'package:furni_mobile_app/product/widget/Add_review.dart';
-
 import 'package:furni_mobile_app/product/widget/details_card.dart';
-
 import 'package:furni_mobile_app/product/widget/display_images.dart';
-
 import 'package:furni_mobile_app/product/widget/navigation.dart';
-
 import 'package:furni_mobile_app/product/widget/review.dart';
-
 import 'package:furni_mobile_app/services/api_dummydata.dart';
 
 class ProductPage extends StatefulWidget {
@@ -53,79 +42,125 @@ class _ProductPageState extends State<ProductPage> {
         }
 
         final productList = snapshot.data!;
-        // Handle case where ID might not exist in the list
         final product = productList.firstWhere(
           (p) => p.id == widget.product_id,
-          orElse: () => productList.first, 
+          orElse: () => productList.first,
         );
 
         return Scaffold(
+          backgroundColor: Colors.white,
           appBar: AppBar(
             backgroundColor: Colors.white,
             elevation: 0,
             automaticallyImplyLeading: false,
-            title: Header(
-              onProductTap: (newId) {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => ProductPage(
-                      product_id: newId,
-                      onQuantityChanged: widget.onQuantityChanged,
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-          body: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  const Navigation(),
-                  const SizedBox(height: 16),
-                  SizedBox(
-                    height: 414,
-                    width: 311,
-                    child: DisplayImages(display_image: product.images),
-                  ),
-                  const SizedBox(height: 16),
-                  DetailsCard(
-                    name: product.name,
-                    category: product.category,
-                    colours: product.colours,
-                    description: product.description,
-                    measurements: product.measurements,
-                    price: product.price,
-                    rating: product.rating,
-                    quantity: widget.initialQuantity,
-                    initialColor: widget.initialColor,
-                    image: product.display_image,
-                    productId: widget.product_id,
-                    onQuantityChanged: (qtyMap) {
-                      widget.onQuantityChanged(qtyMap[widget.product_id] ?? 1);
-                    },
-                    stock: product.quantity,
-                  ),
-                  const SizedBox(height: 20),
-                  const Divider(thickness: 1.5),
-                  const SizedBox(height: 15),
-                  AddReview(
-                    productId: widget.product_id.toString(),
-                    onReviewPosted: () => setState(() {}),
-                  ),
-                  const SizedBox(height: 20),
-                  Review(productId: widget.product_id.toString()),
-                ],
+            title: Center( // Centers the header content on large screens
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 1200),
+                child: Header(
+                  onProductTap: (newId) {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => ProductPage(
+                          product_id: newId,
+                          onQuantityChanged: widget.onQuantityChanged,
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
           ),
+          body: LayoutBuilder(
+            builder: (context, constraints) {
+              // Threshold for Tablet/Desktop
+              bool isWideScreen = constraints.maxWidth > 700;
+
+              return Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 1200),
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Navigation(),
+                          const SizedBox(height: 24),
+                          
+                          if (isWideScreen)
+                            // --- TABLET / DESKTOP LAYOUT ---
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  flex: 5, // Image takes up slightly more space
+                                  child: DisplayImages(display_image: product.images),
+                                ),
+                                const SizedBox(width: 25),
+                                Expanded(
+                                  flex: 4,
+                                  child: _buildDetailsCard(product),
+                                ),
+                              ],
+                            )
+                          else
+                            // --- MOBILE LAYOUT ---
+                            Column(
+                              children: [
+                                DisplayImages(display_image: product.images),
+                                const SizedBox(height: 24),
+                                _buildDetailsCard(product),
+                              ],
+                            ),
+
+                          const SizedBox(height: 25),
+                          const Divider(thickness: 1.5),
+                          const SizedBox(height: 30),
+                          
+                          // Reviews section usually stays full width but can be constrained
+                          AddReview(
+                            productId: widget.product_id.toString(),
+                            onReviewPosted: () => setState(() {}),
+                          ),
+                          const SizedBox(height: 20),
+                          Review(productId: widget.product_id.toString()),
+                          const SizedBox(height: 120), // Bottom nav space
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
           bottomNavigationBar: const SizedBox(
-            height: 100, 
-            child: GlassFloatingNavBar(currentIndex: 3,)
+            height: 100,
+            child: GlassFloatingNavBar(currentIndex: 3),
           ),
         );
       },
+    );
+  }
+
+  // Helper method to keep build clean
+  Widget _buildDetailsCard(Product product) {
+    return DetailsCard(
+      name: product.name,
+      category: product.category,
+      colours: product.colours,
+      description: product.description,
+      measurements: product.measurements,
+      price: product.price,
+      rating: product.rating,
+      quantity: widget.initialQuantity,
+      initialColor: widget.initialColor,
+      image: product.display_image,
+      productId: widget.product_id,
+      onQuantityChanged: (qtyMap) {
+        widget.onQuantityChanged(qtyMap[widget.product_id] ?? 1);
+      },
+      stock: product.quantity,
     );
   }
 }

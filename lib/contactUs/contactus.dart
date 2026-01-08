@@ -54,7 +54,7 @@ class Contactus extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Header(), automaticallyImplyLeading: false),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(32, 0, 32, 0),
+        padding: const EdgeInsets.fromLTRB(28, 0, 28, 0),
         child: Column(
           children: [
             Row(
@@ -190,8 +190,6 @@ class Contactus extends StatelessWidget {
             const SizedBox(height: 32),
 
             Contactform(),
-            const SizedBox(height: 10),
-
             const SizedBox(height: 50),
             Services(),
           ],

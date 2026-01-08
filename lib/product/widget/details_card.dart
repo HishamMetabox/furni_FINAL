@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:furni_mobile_app/Items/counter.dart';
-import 'package:furni_mobile_app/product/widget/rating_star.dart';
 import 'package:furni_mobile_app/product/widget/select_color.dart';
-import 'package:furni_mobile_app/services/OrdersService.dart';
 import 'package:furni_mobile_app/services/auth_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:furni_mobile_app/product/data/orders.dart';
+import 'package:furni_mobile_app/services/OrdersService.dart';
 
 class DetailsCard extends StatefulWidget {
   const DetailsCard({
@@ -51,81 +50,194 @@ class _DetailsCardState extends State<DetailsCard> {
   void initState() {
     super.initState();
     selectedqty = widget.quantity;
-    colorselected =
-        widget.initialColor ?? (widget.colours.isNotEmpty ? widget.colours[0] : "Default");
+    colorselected = widget.initialColor ?? 
+        (widget.colours.isNotEmpty ? widget.colours[0] : "Default");
   }
 
- void handleAddToCart(BuildContext context) async {
+  void handleAddToCart(BuildContext context) async {
     final authService = AuthService();
     final user = await authService.fetchMe();
-    if (user == null) return;
-
-
-      else {
-        ordersList.add(
-          MyOrders(
-            product_id: widget.productId,
-            image: widget.image,
-            quantity: selectedqty,
-            description: widget.description,
-            price: widget.price,
-            colorr: [colorselected],
-            name: widget.name,
-            userId: user.id,
-            measurement: widget.measurements,
-            stock: widget.stock
-          ),
-        );
-      }
-   widget.onQuantityChanged({widget.productId: selectedqty});
-  await CartPersistence.saveCart();
-  ScaffoldMessenger.of(context).showSnackBar(
-  SnackBar(content: Text('${widget.name} added to cart!')));
+    
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please log in to add items to cart')),
+      );
+      return;
     }
 
+    // Add to local orders list
+    ordersList.add(
+      MyOrders(
+        product_id: widget.productId,
+        image: widget.image,
+        quantity: selectedqty,
+        description: widget.description,
+        price: widget.price,
+        colorr: [colorselected],
+        name: widget.name,
+        userId: user.id,
+        measurement: widget.measurements,
+        stock: widget.stock,
+      ),
+    );
 
-  
+    widget.onQuantityChanged({widget.productId: selectedqty});
+    await CartPersistence.saveCart();
 
-  
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${widget.name} added to cart!')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final w = MediaQuery.of(context).size.width;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double maxWidth = constraints.maxWidth;
+        final bool isTablet = maxWidth > 600;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        RatingStar(initialRating: widget.rating),
-        Text(widget.name, style: GoogleFonts.poppins(fontSize: 32)),
-        Text(widget.description),
-        Text('Rs ${widget.price}'),
-
-        SelectColor(
-          colorsNames: widget.colours,
-          initialColor: colorselected,
-          onColorChanged: (value) => setState(() => colorselected = value),
-        ),
-
-        Row(
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            QuantityCounter(
-              max: widget.stock,
-              initialQuantity: selectedqty,
-              onQuantityChanged: (v) => setState(() => selectedqty = v),
-            ),
-            const SizedBox(width: 8),
-            ElevatedButton(
-              onPressed: () => handleAddToCart(context),
-              style: ElevatedButton.styleFrom(
-                fixedSize: Size(w * 0.55, 45),
-                backgroundColor: Colors.black,
+            // --- Product Name ---
+            Text(
+              widget.name,
+              style: TextStyle(
+                fontSize: isTablet ? 38 : 28,
+                fontWeight: FontWeight.w600,
+                letterSpacing: -0.8,
+                fontFamily: GoogleFonts.poppins().fontFamily,
+                height: 1.1,
               ),
-              child: const Text('Add to cart', style: TextStyle(color: Colors.white),),
+              textAlign: TextAlign.start,
+            ),
+            const SizedBox(height: 3),
+
+            // --- Description ---
+            Text(
+              widget.description,
+              style: TextStyle(
+                fontSize: 15,
+                color: const Color.fromARGB(255, 108, 109, 117),
+                letterSpacing: 0,
+                fontFamily: GoogleFonts.inter().fontFamily,
+                fontWeight: FontWeight.w400,
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 3),
+
+            // --- Price ---
+            Text(
+              'Rs ${widget.price.toStringAsFixed(2)}',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w600,
+                fontFamily: GoogleFonts.poppins().fontFamily,
+                letterSpacing: -0.6,
+              ),
+            ),
+            
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 3),
+              child: Divider(
+                color: Color.fromARGB(255, 230, 230, 230),
+                thickness: 1,
+              ),
+            ),
+
+            // --- Measurements ---
+            Text(
+              'Measurements',
+              style: TextStyle(
+                fontSize: 14,
+                color: const Color.fromARGB(255, 108, 109, 117),
+                fontWeight: FontWeight.w600,
+                fontFamily: GoogleFonts.inter().fontFamily,
+                letterSpacing: 0.5,
+              ),
+            ),
+            const SizedBox(height: 5),
+            Text(
+              widget.measurements,
+              style: TextStyle(
+                fontSize: 18,
+                fontFamily: GoogleFonts.inter().fontFamily,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            const SizedBox(height: 7),
+
+            // --- Color Selection ---
+            Row(
+              children: [
+                Text(
+                  'Choose Color ',
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: const Color.fromARGB(255, 108, 109, 117),
+                    fontWeight: FontWeight.w600,
+                    fontFamily: GoogleFonts.inter().fontFamily,
+                  ),
+                ),
+                const Icon(Icons.arrow_forward_ios, size: 10, color: Color.fromARGB(255, 108, 109, 117))
+              ],
+            ),
+            const SizedBox(height: 7),
+            SelectColor(
+              colorsNames: widget.colours,
+              initialColor: colorselected,
+              onColorChanged: (value) => setState(() => colorselected = value),
+            ),
+            
+            const SizedBox(height: 25),
+
+            // --- Action Row (Counter + Button) ---
+            // This Row will stay side-by-side even on the smallest screens
+            Row(
+              children: [
+                // Fixed-width counter
+                QuantityCounter(
+                  initialQuantity: selectedqty,
+                  onQuantityChanged: (v) => setState(() => selectedqty = v),
+                ),
+                
+                const SizedBox(width: 12),
+
+                // Flexible button filling remaining space
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () => handleAddToCart(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      foregroundColor: Colors.white,
+                      minimumSize: const Size(0, 52), // High touch-target height
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown, // Shrinks text if button gets too tiny
+                      child: Text(
+                        'Add to cart',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                          fontFamily: GoogleFonts.inter().fontFamily,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
-        ),
-      ],
+        );
+      },
     );
   }
-
 }

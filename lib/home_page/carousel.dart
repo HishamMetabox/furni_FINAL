@@ -28,40 +28,50 @@ class _CarouselWidgetState extends State<CarouselWidget> {
       future: _heroBannersFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        } 
-        else if (snapshot.hasError) {
-          return Container(
-            margin: const EdgeInsets.all(14),
-            decoration: BoxDecoration(color: Colors.red[100], borderRadius: BorderRadius.circular(16)),
-            child: const Center(child: Text("Connection Error: Check IP or Internet")),
+          return const SizedBox(
+            height: 450, // Match mobile height for loader
+            child: Center(child: CircularProgressIndicator(color: Colors.black)),
           );
-        } 
-        else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Container(
-            margin: const EdgeInsets.all(14),
-            decoration: BoxDecoration(color: Colors.blue[50], borderRadius: BorderRadius.circular(16)),
-            child: const Center(child: Text("No banners found in Strapi")),
-          );
+        } else if (snapshot.hasError) {
+          return _buildErrorState("Connection Error");
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return _buildErrorState("No banners found");
         }
 
         final banners = snapshot.data!;
 
-        return Column(
-          children: [
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(14.0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final double width = constraints.maxWidth;
+            final bool isTablet = width > 600;
+            final bool isDesktop = width > 1024;
+
+            // --- INCREASED HEIGHTS ---
+            double carouselHeight = 450; // Mobile
+            if (isDesktop) {
+              carouselHeight = 950; // Desktop
+            } else if (isTablet) {
+              carouselHeight = 600; // Tablet
+            }
+
+            return Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: isDesktop ? 25 : 14,
+                vertical: 14,
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(24),
+                child: SizedBox(
+                  height: carouselHeight,
+                  width: double.infinity,
                   child: Stack(
                     alignment: Alignment.bottomCenter,
                     children: [
                       FlutterCarousel(
                         items: banners.map((banner) {
                           final String imagePath = banner.image;
-                          final String fullImageUrl = imagePath.startsWith('http') 
-                              ? imagePath 
+                          final String fullImageUrl = imagePath.startsWith('http')
+                              ? imagePath
                               : '$baseUrl${imagePath.startsWith('/') ? '' : '/'}$imagePath';
 
                           return Stack(
@@ -69,48 +79,55 @@ class _CarouselWidgetState extends State<CarouselWidget> {
                             children: [
                               Image.network(
                                 fullImageUrl,
-                                fit: BoxFit.cover, // Ensures image fills the container
+                                fit: BoxFit.cover, // Image fills the tall container
                                 errorBuilder: (ctx, err, stack) => Container(
                                   color: Colors.grey[300],
                                   child: const Icon(Icons.broken_image, size: 50),
                                 ),
                               ),
-                              // Gradient for text readability
+                              // Enhanced Gradient for taller height
                               Container(
-                                decoration: const BoxDecoration(
+                                decoration: BoxDecoration(
                                   gradient: LinearGradient(
                                     begin: Alignment.topCenter,
                                     end: Alignment.bottomCenter,
-                                    colors: [Colors.black38, Colors.transparent, Colors.black54],
+                                    stops: const [0.0, 0.4, 1.0],
+                                    colors: [
+                                      Colors.black.withOpacity(0.4),
+                                      Colors.transparent,
+                                      Colors.black.withOpacity(0.7),
+                                    ],
                                   ),
                                 ),
                               ),
-                              // CONTENT WITH OVERFLOW FIX
+                              // Content
                               Positioned(
-                                top: 20,
-                                left: 10,
-                                right: 10, // Forces text to wrap instead of overflowing
+                                top: isDesktop ? 30 : 20, 
+                                left: isDesktop ? 50 : 30,
+                                right: isDesktop ? 50 : 30,
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Text(
                                       banner.headline,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
                                       style: GoogleFonts.poppins(
-                                          color: Colors.white,
-                                          fontSize: 24,
-                                          fontWeight: FontWeight.bold),
+                                        color: Colors.white,
+                                        fontSize: isDesktop ? 25 : (isTablet ? 20 : 16),
+                                        fontWeight: FontWeight.bold,
+                                        height: 1.1,
+                                      ),
                                     ),
-                                    const SizedBox(height: 5),
+                                    const SizedBox(height: 10),
                                     Text(
                                       banner.subtext,
-                                      maxLines: 4,
+                                      maxLines: 3,
                                       overflow: TextOverflow.ellipsis,
                                       style: GoogleFonts.poppins(
-                                          color: Colors.white.withOpacity(0.9), 
-                                          fontSize: 14),
+                                        color: Colors.white.withOpacity(0.9),
+                                        fontSize: isDesktop ? 16 : 14,
+                                        height: 1.5,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -119,9 +136,10 @@ class _CarouselWidgetState extends State<CarouselWidget> {
                           );
                         }).toList(),
                         options: CarouselOptions(
-                          height: double.infinity,
+                          height: carouselHeight,
                           viewportFraction: 1.0,
                           autoPlay: true,
+                          autoPlayInterval: const Duration(seconds: 5),
                           showIndicator: false,
                           onPageChanged: (index, reason) {
                             setState(() => _currentIndex = index);
@@ -131,16 +149,18 @@ class _CarouselWidgetState extends State<CarouselWidget> {
                       
                       // Custom Indicators
                       Positioned(
-                        bottom: 15,
+                        bottom: 20,
                         child: Row(
                           children: List.generate(banners.length, (index) {
                             return AnimatedContainer(
                               duration: const Duration(milliseconds: 300),
-                              margin: const EdgeInsets.symmetric(horizontal: 4),
-                              width: _currentIndex == index ? 24 : 8,
-                              height: 8,
+                              margin: const EdgeInsets.symmetric(horizontal: 6),
+                              width: _currentIndex == index ? 20 : 12,
+                              height: 6,
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(_currentIndex == index ? 1 : 0.5),
+                                color: _currentIndex == index 
+                                    ? Colors.white 
+                                    : Colors.white.withOpacity(0.4),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             );
@@ -151,10 +171,22 @@ class _CarouselWidgetState extends State<CarouselWidget> {
                   ),
                 ),
               ),
-            ),
-          ],
+            );
+          },
         );
       },
+    );
+  }
+
+  Widget _buildErrorState(String message) {
+    return Container(
+      height: 300,
+      margin: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.grey[100], 
+        borderRadius: BorderRadius.circular(16)
+      ),
+      child: Center(child: Text(message, style: const TextStyle(color: Colors.grey))),
     );
   }
 }

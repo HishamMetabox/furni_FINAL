@@ -51,7 +51,12 @@ class _BottomCartSheetState extends State<BottomCartSheet> {
       padding: const EdgeInsets.all(1),
       height: MediaQuery.of(context).size.height * 0.80,
       width: double.infinity,
-      decoration: const BoxDecoration(color: Colors.white),
+      decoration: const BoxDecoration(color: Colors.white,
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(20),
+        topRight: Radius.circular(20),
+      ),
+      ),
       child: Column(
         children: [
           Padding(

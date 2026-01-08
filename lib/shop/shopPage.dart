@@ -6,9 +6,8 @@ import 'package:furni_mobile_app/shop/widget/filternav.dart';
 import 'package:furni_mobile_app/shop/widget/grid.dart';
 import 'package:furni_mobile_app/shop/widget/productFilter.dart';
 import 'package:furni_mobile_app/shop_page/hero_section.dart';
-
-// Assuming Product model is in this path
-import 'package:furni_mobile_app/product/data/dummyData.dart'; 
+import 'package:furni_mobile_app/product/data/dummyData.dart';
+import 'package:furni_mobile_app/shop/model/category_model.dart';
 
 class Shoppage extends StatefulWidget {
   final String? selectedCategory;
@@ -23,7 +22,12 @@ class _ShoppageState extends State<Shoppage> {
   List<Product> _filteredProducts = [];
   bool _isLoading = true;
 
-  // Mapping filter display names to actual product categories from API
+  String _selectedSort = 'C';
+
+  // Persistent selection
+  List<CategoryModel> _selectedCategories = [];
+  RangeValues _currentRange = const RangeValues(0, 100000);
+
   final Map<String, List<String>> categoryMapping = {
     'Bedroom': ['bed', 'wardrobe'],
     'Living Room': ['sofa', 'chair', 'tv furniture', 'table'],
@@ -43,21 +47,9 @@ class _ShoppageState extends State<Shoppage> {
     try {
       final products = await ApiService.fetchProducts();
       if (!mounted) return;
-
       setState(() {
         _allProducts = products;
-        
-        if (widget.selectedCategory != null && widget.selectedCategory!.isNotEmpty) {
-          String target = widget.selectedCategory!.toLowerCase().replaceAll('bundle', '').trim();
-          _filteredProducts = _allProducts.where((p) {
-            String productCat = p.category.toLowerCase().trim();
-            String productName = p.name.toLowerCase().trim();
-            return productCat.contains(target) || productName.contains(target);
-          }).toList();
-          if (_filteredProducts.isEmpty) _filteredProducts = List.from(products);
-        } else {
-          _filteredProducts = List.from(products);
-        }
+        _filteredProducts = List.from(products);
         _isLoading = false;
       });
     } catch (e) {
@@ -67,23 +59,30 @@ class _ShoppageState extends State<Shoppage> {
 
   void _applyFilter(ProductFilter filter) {
     setState(() {
-      _filteredProducts = _allProducts.where((product) {
-        final productCategory = (product.category).trim().toLowerCase();
+      _selectedCategories = filter.selectedCategoryModels;
+      _currentRange = RangeValues(filter.minPrice, filter.maxPrice);
 
-        bool categoryMatch = true;
-        // Check if user selected categories in the BottomSheet
-        if (filter.categories != null && filter.categories!.isNotEmpty) {
-          categoryMatch = false;
-          for (var selectedName in filter.categories!) {
-            final mappedList = categoryMapping[selectedName] ?? [selectedName.toLowerCase()];
-            if (mappedList.any((m) => m.toLowerCase() == productCategory)) {
+      _filteredProducts = _allProducts.where((product) {
+        final productCategory = product.category.toLowerCase().trim();
+
+        bool categoryMatch = _selectedCategories.isEmpty;
+
+        if (_selectedCategories.isNotEmpty) {
+          for (final selected in _selectedCategories) {
+            final mappedList =
+                categoryMapping[selected.name] ?? [selected.name.toLowerCase()];
+
+            if (mappedList.any((m) => m == productCategory)) {
               categoryMatch = true;
               break;
             }
           }
         }
 
-        final priceMatch = product.price >= filter.minPrice && product.price <= filter.maxPrice;
+        final priceMatch =
+            product.price >= filter.minPrice &&
+            product.price <= filter.maxPrice;
+
         return categoryMatch && priceMatch;
       }).toList();
     });
@@ -91,10 +90,16 @@ class _ShoppageState extends State<Shoppage> {
 
   void _applySort(String criteria) {
     setState(() {
-      if (criteria == 'C') _filteredProducts.sort((a, b) => a.price.compareTo(b.price));
-      else if (criteria == 'D') _filteredProducts.sort((a, b) => b.price.compareTo(a.price));
-      else if (criteria == 'B') _filteredProducts.sort((a, b) => b.id.compareTo(a.id));
-      else if (criteria == 'A') _filteredProducts.sort((a, b) => (b.id).compareTo(a.id)); // Replace with rating if available
+      _selectedSort = criteria;
+      if (criteria == 'C') {
+        _filteredProducts.sort((a, b) => a.price.compareTo(b.price));
+      } else if (criteria == 'D') {
+        _filteredProducts.sort((a, b) => b.price.compareTo(a.price));
+      } else if (criteria == 'B') {
+        _filteredProducts.sort((a, b) => b.id.compareTo(a.id));
+      } else if (criteria == 'A') {
+        _filteredProducts.sort((a, b) => b.id.compareTo(a.id));
+      }
     });
   }
 
@@ -102,23 +107,49 @@ class _ShoppageState extends State<Shoppage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(title: const Header(), automaticallyImplyLeading: false, backgroundColor: Colors.white, elevation: 0),
-      body: _isLoading 
-        ? const Center(child: CircularProgressIndicator(color: Color(0xFF06356B)))
-        : SingleChildScrollView(
-            child: Column(
-              children: [
-                const HeroSection(),
-                Filternav(onFilterApplied: _applyFilter, onSortApplied: _applySort),
-                const SizedBox(height: 10),
-                _filteredProducts.isEmpty 
-                  ? const Center(child: Padding(padding: EdgeInsets.symmetric(vertical: 60), child: Text("No products match this selection.")))
-                  : ProductGrid(items: _filteredProducts), 
-                const SizedBox(height: 120),
-              ],
-            ),
-          ),
-      bottomNavigationBar: const SizedBox(height: 100, child: GlassFloatingNavBar(currentIndex: 1)),
+      appBar: AppBar(
+        title: const Header(),
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.white,
+        elevation: 0,
+      ),
+      body: Stack(
+        children: [
+          _isLoading
+              ? const Center(
+                  child: CircularProgressIndicator(color: Color(0xFF06356B)),
+                )
+              : SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      const HeroSection(),
+                      Filternav(
+                        selectedCategories: _selectedCategories,
+                        currentRange: _currentRange,
+                        selectedSort: _selectedSort,
+                        onFilterApplied: _applyFilter,
+                        onSortApplied: _applySort,
+                      ),
+                      const SizedBox(height: 10),
+                      _filteredProducts.isEmpty
+                          ? const Center(
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(vertical: 60),
+                                child: Text(
+                                  "No products match this selection.",
+                                ),
+                              ),
+                            )
+                          : ProductGrid(items: _filteredProducts),
+                      const SizedBox(height: 100), // Space for navbar
+                    ],
+                  ),
+                ),
+
+          // Floating Glass Navbar
+          const GlassFloatingNavBar(currentIndex: 1),
+        ],
+      ),
     );
   }
 }

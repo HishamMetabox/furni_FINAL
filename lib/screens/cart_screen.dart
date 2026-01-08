@@ -38,53 +38,56 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   double get total => currentSubtotal + shippingCost;
-  Future<void> _load() async {
+Future<void> _load() async {
   await CartPersistence.loadCart();
-  currentUser = await AuthService().fetchMe();
-
-  setState(() {
-    for (final item in userCart) {
-      itemQuantities[item.product_id] = item.quantity;
-    }
-  });
+  final user = await AuthService().fetchMe();
+  
+  if (mounted) {
+    setState(() {
+      currentUser = user;
+      // Clear and rebuild map to ensure it matches the freshly loaded list
+      itemQuantities.clear(); 
+      for (final item in userCart) {
+        itemQuantities[item.product_id] = item.quantity;
+      }
+    });
+  }
 }
 
   @override
   void initState() {
     super.initState();
-    // Initialize quantities from the data source
     for (int i = 0; i < userCart.length; i++) {
       itemQuantities[i] = userCart[i].quantity;
     }
       _load();
   }
 
-  // IMPORTANT: Catching data when returning from OrderSummaryScreen
-  Future<void> _navigateToCheckout() async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => OrderSummaryScreen(
-          subtotal: currentSubtotal,
-          Total: total,
-          shipping: shippingCost,
-          quantities: Map<int, int>.from(itemQuantities),
-        ),
+Future<void> _navigateToCheckout() async {
+  final result = await Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => OrderSummaryScreen(
+        subtotal: currentSubtotal,
+        Total: total,
+        shipping: shippingCost,
+        quantities: Map<int, int>.from(itemQuantities), 
       ),
-    );
+    ),
+  );
 
-    // If the user clicked 'back' in the Summary Screen and sent data back
-    if (result != null && result is Map<String, dynamic>) {
-      setState(() {
-        if (result.containsKey('quantities')) {
-          itemQuantities = Map<int, int>.from(result['quantities']);
-        }
-        if (result.containsKey('subtotal')) {
-          currentSubtotal = result['subtotal'];
-        }
-      });
-    }
+
+  if (result != null && result is Map<String, dynamic>) {
+    setState(() {
+      if (result.containsKey('quantities')) {
+        itemQuantities = Map<int, int>.from(result['quantities']);
+      }
+      if (result.containsKey('subtotal')) {
+        currentSubtotal = result['subtotal'];
+      }
+    });
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -107,16 +110,22 @@ class _CartScreenState extends State<CartScreen> {
                       // Cart Items List
                       SizedBox(
                         height: 350,
-                        child: ListedItems(
-                          onSubtotalChanged: (subtotal) {
-                            setState(() => currentSubtotal = subtotal);
-                          },
-                          onQuantityChanged: (quantities) {
-                            setState(() {
-                              itemQuantities = Map<int, int>.from(quantities);
-                            });
-                          },
-                          initialQuantities: itemQuantities,
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              ListedItems(
+                                onSubtotalChanged: (subtotal) {
+                                  setState(() => currentSubtotal = subtotal);
+                                },
+                                onQuantityChanged: (quantities) {
+                                  setState(() {
+                                    itemQuantities = Map<int, int>.from(quantities);
+                                  });
+                                },
+                                initialQuantities: itemQuantities,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                       

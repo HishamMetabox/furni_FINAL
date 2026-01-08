@@ -11,7 +11,7 @@ class FilterBottomSheet extends StatefulWidget {
   const FilterBottomSheet({
     super.key,
     this.initialSelectedCategories = const [],
-    this.initialRange = const RangeValues(0, 100000), // Default range
+    this.initialRange = const RangeValues(0, 100000),
   });
 
   @override
@@ -19,7 +19,6 @@ class FilterBottomSheet extends StatefulWidget {
 }
 
 class _FilterBottomSheetState extends State<FilterBottomSheet> {
-  // ✅ MULTI CATEGORY SELECTION
   List<CategoryModel> selectedCategories = [];
   List<CategoryModel> categories = [];
   bool isLoading = true;
@@ -28,13 +27,13 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   @override
   void initState() {
     super.initState();
-    // Initialize with passed values
+    // Initialize with previous selection
     selectedCategories = List.from(widget.initialSelectedCategories);
     _currentRange = widget.initialRange;
-    loadCategories();
+    _loadCategories();
   }
 
-  Future<void> loadCategories() async {
+  Future<void> _loadCategories() async {
     try {
       final result = await CategoryService.fetchCategories();
       if (mounted) {
@@ -57,7 +56,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(15),
-      height: 480, // Restored height
+      height: 480,
       width: double.infinity,
       decoration: const BoxDecoration(
         color: Colors.white,
@@ -100,49 +99,61 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       fontFamily: GoogleFonts.inter().fontFamily,
                     ),
                   ),
-
                   const SizedBox(height: 20),
 
-                  // --- Category List (Horizontal Scroll) ---
+                  // --- Category List ---
                   SizedBox(
                     height: 45,
                     child: isLoading
-                        ? const Center(child: CircularProgressIndicator(strokeWidth: 2))
+                        ? const Center(
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
                         : categories.isEmpty
-                            ? const Text('No categories found')
-                            : ListView.builder(
-                                scrollDirection: Axis.horizontal,
-                                itemCount: categories.length,
-                                itemBuilder: (context, index) {
-                                  final item = categories[index];
-                                  final isSelected = selectedCategories.any((c) => c.id == item.id);
+                        ? const Text('No categories found')
+                        : ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: categories.length,
+                            itemBuilder: (context, index) {
+                              final item = categories[index];
+                              final isSelected = selectedCategories.any(
+                                (c) => c.id == item.id,
+                              );
 
-                                  return Container(
-                                    margin: const EdgeInsets.only(right: 10),
-                                    child: ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: isSelected ? Colors.white : Colors.black,
-                                        foregroundColor: isSelected ? Colors.black : Colors.white,
-                                        side: isSelected ? const BorderSide(color: Colors.black) : BorderSide.none,
-                                        elevation: 0,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(20),
-                                        ),
-                                      ),
-                                      onPressed: () {
-                                        setState(() {
-                                          if (isSelected) {
-                                            selectedCategories.removeWhere((c) => c.id == item.id);
-                                          } else {
-                                            selectedCategories.add(item);
-                                          }
-                                        });
-                                      },
-                                      child: Text(item.name),
+                              return Container(
+                                margin: const EdgeInsets.only(right: 10),
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: isSelected
+                                        ? Colors.black
+                                        : Colors.white,
+                                    foregroundColor: isSelected
+                                        ? Colors.white
+                                        : Colors.black,
+                                    side: const BorderSide(
+                                      color: Colors.black,
+                                      width: 1,
                                     ),
-                                  );
-                                },
-                              ),
+                                    elevation: 0,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      if (isSelected) {
+                                        selectedCategories.removeWhere(
+                                          (c) => c.id == item.id,
+                                        );
+                                      } else {
+                                        selectedCategories.add(item);
+                                      }
+                                    });
+                                  },
+                                  child: Text(item.name),
+                                ),
+                              );
+                            },
+                          ),
                   ),
 
                   const SizedBox(height: 30),
@@ -156,10 +167,9 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       fontFamily: GoogleFonts.inter().fontFamily,
                     ),
                   ),
-
                   const SizedBox(height: 20),
 
-                  // --- Price Values Display ---
+                  // --- Price Display ---
                   Row(
                     children: [
                       Text(
@@ -178,7 +188,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                   RangeSlider(
                     values: _currentRange,
                     min: 0,
-                    max: 100000, // Matching your logic
+                    max: 100000,
                     activeColor: Colors.black,
                     inactiveColor: Colors.grey.shade300,
                     onChanged: (values) {
@@ -209,6 +219,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                   categories: selectedCategories.map((e) => e.name).toList(),
                   minPrice: _currentRange.start,
                   maxPrice: _currentRange.end,
+                  selectedCategoryModels: selectedCategories,
                 ),
               );
             },

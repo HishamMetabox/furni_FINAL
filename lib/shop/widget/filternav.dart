@@ -4,15 +4,23 @@ import 'package:furni_mobile_app/shop/widget/filter.dart';
 import 'package:furni_mobile_app/shop/widget/sortby.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:furni_mobile_app/shop/widget/productFilter.dart';
+import 'package:furni_mobile_app/shop/model/category_model.dart';
 
 class Filternav extends StatelessWidget {
   final Function(ProductFilter) onFilterApplied;
   final Function(String) onSortApplied;
+  final String selectedSort; // 🔥 add this
+
+  final List<CategoryModel> selectedCategories;
+  final RangeValues currentRange;
 
   const Filternav({
-    super.key, 
-    required this.onFilterApplied, 
-    required this.onSortApplied
+    super.key,
+    required this.onFilterApplied,
+    required this.onSortApplied,
+    required this.selectedCategories,
+    required this.currentRange,
+    required this.selectedSort,
   });
 
   @override
@@ -39,10 +47,10 @@ class Filternav extends StatelessWidget {
               final result = await showModalBottomSheet<ProductFilter>(
                 context: context,
                 isScrollControlled: true,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(24))
+                builder: (_) => FilterBottomSheet(
+                  initialSelectedCategories: selectedCategories,
+                  initialRange: currentRange,
                 ),
-                builder: (ctx) => const FilterBottomSheet(),
               );
               if (result != null) onFilterApplied(result);
             },
@@ -50,25 +58,44 @@ class Filternav extends StatelessWidget {
               children: [
                 SvgPicture.asset('assets/images/filter.svg', width: 20),
                 const SizedBox(width: 8),
-                Text('Filter', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black)),
+                Text(
+                  'Filter',
+                  style: GoogleFonts.inter(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black,
+                  ),
+                ),
               ],
             ),
           ),
           const Spacer(),
           TextButton(
             onPressed: () async {
+              // Open the Sortby bottom sheet while passing the previously selected sort
               final String? result = await showModalBottomSheet<String>(
                 context: context,
                 shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(24))
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
                 ),
-                builder: (ctx) => const Sortby(),
+                builder: (ctx) => Sortby(
+                  initialSelectedSort:
+                      selectedSort, // pass the current selection
+                ),
               );
-              if (result != null) onSortApplied(result);
+
+              if (result != null) onSortApplied(result); // trigger callback
             },
             child: Row(
               children: [
-                Text('Sort by', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black)),
+                Text(
+                  'Sort by',
+                  style: GoogleFonts.inter(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black,
+                  ),
+                ),
                 const Icon(Icons.arrow_drop_down, color: Colors.black),
               ],
             ),

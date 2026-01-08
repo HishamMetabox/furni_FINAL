@@ -116,7 +116,7 @@ class GlassFloatingNavBar extends StatelessWidget {
                                 colorFilter: ColorFilter.mode(
                                   currentIndex == 1
                                       ? Colors.black
-                                      : Colors.black54,
+                                      : Colors.black,
                                   BlendMode.srcIn,
                                 ),
                               ),
@@ -173,7 +173,7 @@ class GlassFloatingNavBar extends StatelessWidget {
                             'assets/images/user-circle.svg',
                             width: 24,
                             colorFilter: ColorFilter.mode(
-                              currentIndex == 3 ? Colors.black : Colors.black54,
+                              currentIndex == 3 ? Colors.black : Colors.black,
                               BlendMode.srcIn,
                             ),
                           ),

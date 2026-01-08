@@ -3,6 +3,7 @@ import 'package:furni_mobile_app/Items/product.dart';
 import 'package:furni_mobile_app/models/user_model.dart';
 import 'package:furni_mobile_app/product/Product_page.dart';
 import 'package:furni_mobile_app/product/data/orders.dart';
+import 'package:furni_mobile_app/services/OrdersService.dart';
 import 'package:furni_mobile_app/services/auth_service.dart';
 
 class ListedItems extends StatefulWidget {
@@ -11,12 +12,13 @@ class ListedItems extends StatefulWidget {
     required this.onSubtotalChanged,
     required this.onQuantityChanged,
     required this.initialQuantities,
+    this.readOnly = false,
   });
 
   final void Function(double subtotal) onSubtotalChanged;
   final void Function(Map<int, int> quantities) onQuantityChanged;
   final Map<int, int>? initialQuantities;
-
+  final bool readOnly;
   @override
   State<ListedItems> createState() => _ListedItemsState();
 }
@@ -44,13 +46,12 @@ class _ListedItemsState extends State<ListedItems> {
         setState(() {
           _currentUser = user;
           
-  
+          // Initialize quantities for current user's cart items
           for (int i = 0; i < userCart.length; i++) {
-            quantities.putIfAbsent(i, () => userCart[i].quantity);
+            quantities[i] = userCart[i].quantity;
           }
           _isLoading = false;
         });
-
 
         WidgetsBinding.instance.addPostFrameCallback((_) {
           widget.onSubtotalChanged(computeSubtotal());
@@ -73,9 +74,9 @@ class _ListedItemsState extends State<ListedItems> {
 
   double computeSubtotal() {
     double sum = 0.0;
-    for (int i = 0; i < userCart.length; i++) {
-      final qty = quantities[i] ?? 1;
-      sum += (userCart[i].price * qty);
+    for (var item in userCart) {
+      final qty = quantities[item.product_id] ?? item.quantity;
+      sum += (item.price * qty);
     }
     return sum;
   }
@@ -83,6 +84,7 @@ class _ListedItemsState extends State<ListedItems> {
   void _onQuantityChanged(int index, int qty) {
     setState(() {
       quantities[index] = qty;
+      userCart[index].quantity = qty;
     });
 
     widget.onSubtotalChanged(computeSubtotal());
@@ -113,35 +115,54 @@ class _ListedItemsState extends State<ListedItems> {
     return Column(
       children: List.generate(
         userCart.length,
-        (index) => TextButton(
-         onPressed: () {
-  final currentItem = userCart[index];
-  Navigator.of(context).push(MaterialPageRoute(
-    builder: (ctx) => ProductPage(
-      product_id: currentItem.product_id,
-      // Pass the CURRENT quantity from our local state
-      initialQuantity: quantities[index] ?? currentItem.quantity,
-      // Pass the CURRENT color from the order object
-      initialColor: currentItem.colorr.isNotEmpty ? currentItem.colorr[0] : null,
-      onQuantityChanged: (value) {
-        // This updates the local 'quantities' map and recalculates subtotal
-        _onQuantityChanged(index, value);
-      },
-    ),
-  )).then((_) {
-    // This runs when you come BACK from the product page
-    setState(() {
-      // Refresh the UI to show updated colors/quantities in the list
-    });
-  });
-},
-          child: ProductWidget(
-            item: userCart[index],
-            onPriceChanged: (_) {}, // Handled via computeSubtotal
-            onQuantityChanged: (qty) => _onQuantityChanged(index, qty),
-            initialQuantity: quantities[index] ?? 1,
-          ),
-        ),
+        (index) {
+          final currentItem = userCart[index];
+
+          return TextButton(
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (ctx) => ProductPage(
+                  product_id: currentItem.product_id,
+                  // Use product_id for quantity lookup
+                  initialQuantity: quantities[currentItem.product_id] ?? currentItem.quantity,
+                  initialColor: currentItem.colorr.isNotEmpty ? currentItem.colorr[0] : null,
+                  onQuantityChanged: (value) {
+                    _onQuantityChanged(currentItem.product_id, value);
+                  },
+                ),
+              )).then((_) {
+                setState(() {}); 
+              });
+            },
+            child: ProductWidget(
+            
+              item: currentItem,
+              onRemove: () async {
+                setState(() {
+                  // CORRECT: Removes only this specific instance from the global list
+                  ordersList.remove(currentItem); 
+                });
+                
+                await CartPersistence.saveCart();
+
+              
+                widget.onSubtotalChanged(computeSubtotal());
+                widget.onQuantityChanged(Map<int, int>.from(quantities));
+              },
+              onPriceChanged: (_) {
+                widget.onSubtotalChanged(computeSubtotal());
+              },
+              onQuantityChanged: (qty) {
+                _onQuantityChanged(currentItem.product_id, qty);
+              },
+              initialQuantity: quantities[currentItem.product_id] ?? currentItem.quantity,
+            ),
+          );
+        },
       ),
     );
   }

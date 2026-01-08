@@ -2,59 +2,93 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class Sortby extends StatefulWidget {
-  const Sortby({super.key});
+  final String initialSelectedSort;
+
+  const Sortby({super.key, this.initialSelectedSort = 'C'});
 
   @override
   State<Sortby> createState() => _SortbyState();
 }
 
 class _SortbyState extends State<Sortby> {
-  String _selectedOption = ''; 
+  late String _selectedSort;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedSort = widget.initialSelectedSort;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
-      height: 380,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 10),
-            child: Row(
-              children: [
-                GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: const Icon(Icons.arrow_back_ios_new, size: 18)
+          // --- Header with Title and Close Icon ---
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Sort by',
+                style: GoogleFonts.inter(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
                 ),
-                const SizedBox(width: 15),
-                Text('Sort by', style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w700)),
-              ],
-            ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () => Navigator.pop(context), // close bottom sheet
+              ),
+            ],
           ),
-          const SizedBox(height: 20),
-          _option('Recommended', 'A'),
-          _option('Recently Added', 'B'),
-          _option('Price: Low to High', 'C'),
-          _option('Price: High to Low', 'D'),
+          const SizedBox(height: 10),
+
+          // --- Radio Options ---
+          RadioListTile<String>(
+            title: const Text('Cheapest'),
+            value: 'C',
+            groupValue: _selectedSort,
+            onChanged: (val) {
+              setState(() => _selectedSort = val!);
+              Navigator.pop(context, val);
+            },
+          ),
+          RadioListTile<String>(
+            title: const Text('Most Expensive'),
+            value: 'D',
+            groupValue: _selectedSort,
+            onChanged: (val) {
+              setState(() => _selectedSort = val!);
+              Navigator.pop(context, val);
+            },
+          ),
+          RadioListTile<String>(
+            title: const Text('Newest'),
+            value: 'B',
+            groupValue: _selectedSort,
+            onChanged: (val) {
+              setState(() => _selectedSort = val!);
+              Navigator.pop(context, val);
+            },
+          ),
+          RadioListTile<String>(
+            title: const Text('Oldest'),
+            value: 'A',
+            groupValue: _selectedSort,
+            onChanged: (val) {
+              setState(() => _selectedSort = val!);
+              Navigator.pop(context, val);
+            },
+          ),
         ],
       ),
-    );
-  }
-
-  Widget _option(String title, String val) {
-    return RadioListTile<String>(
-      title: Text(title, style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w500)),
-      value: val,
-      groupValue: _selectedOption,
-      activeColor: Colors.black,
-      onChanged: (String? value) {
-        setState(() => _selectedOption = value!);
-        // This is the key: it closes the sheet and returns the value 'A', 'B', etc.
-        Future.delayed(const Duration(milliseconds: 200), () {
-          Navigator.pop(context, value);
-        });
-      },
     );
   }
 }

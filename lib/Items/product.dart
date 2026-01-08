@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:furni_mobile_app/Items/counter.dart';
 import 'package:furni_mobile_app/product/data/orders.dart';
-
+import 'package:furni_mobile_app/services/OrdersService.dart';
 
 class ProductWidget extends StatefulWidget {
   const ProductWidget({
@@ -11,12 +11,20 @@ class ProductWidget extends StatefulWidget {
     required this.onPriceChanged,
     required this.onQuantityChanged,
     required this.initialQuantity,
+      this.readOnly = true,
+      required this.onRemove,
   });
 
   final MyOrders item;
   final void Function(double) onPriceChanged;
   final void Function(int) onQuantityChanged;
   final int initialQuantity;
+    final bool readOnly;
+  
+  
+  final VoidCallback onRemove;
+
+
 
   @override
   State<ProductWidget> createState() => _ProductWidgetState();
@@ -43,14 +51,22 @@ class _ProductWidgetState extends State<ProductWidget> {
     widget.onPriceChanged(widget.item.price * value);
   }
 
-void removeOrders() {
+void removeOrders() async {
   setState(() {
-
-    ordersList.remove(widget.item);
+    
+    ordersList.remove(widget.item); 
   });
 
-  widget.onPriceChanged(0);
-  widget.onQuantityChanged(0);
+  await CartPersistence.saveCart();
+
+
+  widget.onRemove(); 
+
+  if (mounted) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("${widget.item.name} removed from cart")),
+    );
+  }
 }
   ImageProvider resolveImage(String image) {
   if (image.startsWith('http')) {
@@ -112,12 +128,12 @@ Widget build(BuildContext context) {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  QuantityCounter(
-                    max: widget.item.stock,
-                    initialQuantity: selectedQty,
-                    onQuantityChanged: _onQuantityChanged,
-                  ),
-                ],
+                 IgnorePointer(
+                   ignoring: widget.readOnly, 
+                  child: Opacity(
+                   opacity: widget.readOnly ? 0.7 : 1.0, 
+                    child: Text("$selectedQty Qty")))
+                ]
               ),
             ),
 

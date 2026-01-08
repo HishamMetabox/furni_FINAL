@@ -16,38 +16,55 @@ class InfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.grey[200],
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Column(
-        children: [
-          SvgPicture.network(iconUrl, height: 32, width: 32),
-          const SizedBox(height: 16),
-          Text(
-            title.toUpperCase(),
-            style: TextStyle(
-              fontFamily: GoogleFonts.inter().fontFamily,
-              fontWeight: FontWeight.w700,
-              fontSize: 16,
-              color: const Color.fromARGB(255, 108, 114, 117),
-            ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final bool isSmall = constraints.maxWidth < 500;
+
+        return Container(
+          width: double.infinity,
+          padding: EdgeInsets.all(isSmall ? 10 : 20),
+          decoration: BoxDecoration(
+            color: const Color.fromARGB(255, 243, 245, 247),
+            borderRadius: BorderRadius.circular(isSmall ? 12 : 20),
           ),
-          const SizedBox(height: 8),
-          Text(
-            text,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontFamily: GoogleFonts.inter().fontFamily,
-              fontWeight: FontWeight.w600,
-              fontSize: 16,
-            ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SvgPicture.network(
+                iconUrl,
+                height: isSmall ? 24 : 32,
+                width: isSmall ? 24 : 32,
+                fit: BoxFit.contain,
+              ),
+              SizedBox(height: isSmall ? 8 : 16),
+              Text(
+                title.toUpperCase(),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontFamily: GoogleFonts.inter().fontFamily,
+                  fontWeight: FontWeight.w700,
+                  fontSize: isSmall ? 10 : 14,
+                  color: const Color.fromARGB(255, 108, 114, 117),
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                text,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontFamily: GoogleFonts.inter().fontFamily,
+                  fontWeight: FontWeight.w600,
+                  fontSize: isSmall ? 11 : 15,
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

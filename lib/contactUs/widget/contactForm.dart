@@ -151,7 +151,7 @@ class _ContactformState extends State<Contactform> {
               ),
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return 'Name is required';
+                  return 'Email is required';
                 }
                 return null;
               },
@@ -199,7 +199,7 @@ class _ContactformState extends State<Contactform> {
               ),
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return 'Name is required';
+                  return 'Message is required';
                 }
                 return null;
               },
