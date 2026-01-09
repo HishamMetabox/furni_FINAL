@@ -10,6 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  # Removed flutter_launcher_icons from here
 
   # UI & Fonts
   cupertino_icons: ^1.0.8
@@ -42,9 +43,18 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+  # Added here correctly
+  flutter_launcher_icons: ^0.13.1
+
+# Configuration section (must be at the root, no leading spaces)
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/Furni_icon.png"
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/images/Furni_icon.png"
 
 flutter:
   uses-material-design: true
-
   assets:
     - assets/images/

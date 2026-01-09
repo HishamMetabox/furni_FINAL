@@ -70,7 +70,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       } else {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Registration failed')));
+        ).showSnackBar(const SnackBar(content: Text('Invalid Credentials')));
       }
     } catch (e) {
       setState(() => isLoading = false);

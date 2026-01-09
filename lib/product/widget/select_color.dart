@@ -19,21 +19,38 @@ class SelectColor extends StatefulWidget {
 
 class _SelectColorState extends State<SelectColor> {
   final Map<String, Color> colorMap = {
-    'black': Colors.black,
-    'grey': Colors.grey,
-    'red': Colors.red,
-    'white': Colors.white,
-    'orange': Colors.orange,
-    'brown': Colors.brown,
-    'blue': Colors.blue,
-    'green': Colors.green,
-    'pink': Colors.pink,
-    'yellow': Colors.yellow,
-    'amber': Colors.amber,
-    'beige': const Color(0xFFF5F5DC),
-    'off-white': const Color(0xFFFAF9F6),
-    'dark grey': const Color(0xFF333333),
-    'light blue': Colors.lightBlue,
+     // BASIC COLORS
+  'black': Colors.black,
+  'white': Colors.white,
+  'grey': Colors.grey,
+  'gray': Colors.grey,
+  'dark grey': const Color(0xFF333333),
+  'light grey': const Color(0xFFCCCCCC),
+
+  'red': Colors.red,
+  'blue': Colors.blue,
+  'light blue': Colors.lightBlue,
+  'green': Colors.green,
+  'yellow': Colors.yellow,
+  'amber': Colors.amber,
+  'orange': Colors.orange,
+  'pink': Colors.pink,
+
+  // NEUTRALS
+  'beige': const Color(0xFFF5F5DC),
+  'off-white': const Color(0xFFFAF9F6),
+
+  // WOOD / FURNITURE TONES (API COLORS)
+  'brown': Colors.brown,
+  'walnut': const Color(0xFF5A3A29),
+  'teak': const Color(0xFFB08D57),
+  'mocha': const Color(0xFF6F4E37),
+  'cherry': const Color(0xFF8B3A3A),
+  'oak': const Color(0xFFC8A165),
+
+  // ANTIQUE FINISHES
+  'antique light': const Color(0xFFD8CFC4),
+  'antique nyatuh': const Color(0xFF7A4A2E),
   };
 
   late String selectedColorName;

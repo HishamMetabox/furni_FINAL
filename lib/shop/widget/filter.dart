@@ -225,6 +225,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
             },
             child: const Text('Apply Filter'),
           ),
+          SizedBox(height: 40)
         ],
       ),
     );

@@ -87,6 +87,7 @@ class _SortbyState extends State<Sortby> {
               Navigator.pop(context, val);
             },
           ),
+          SizedBox(height: 40)
         ],
       ),
     );
